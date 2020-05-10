@@ -1,8 +1,5 @@
-/* 
-graphics in Dev-C++ - nguyenvanquan7826 
-*/
 
-#include <winbgim.h> 
+#include <graphics.h>
 
 int main(int argc, char *argv[])
 {
