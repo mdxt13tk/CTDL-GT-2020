@@ -14,17 +14,17 @@ struct dinh
 
 void defaultButton(dinh a)
 {
-		int c = getcolor();
-		setcolor(3);
-		setfillstyle(1, 4);
-		bar(a.x, a.y, a.x + 100, a.y + 40);
-		rectangle(a.x, a.y, a.x + 100, a.y + 40);
-		setcolor(15);
-		setbkcolor(4);
-		settextstyle(2,0,5);
-		outtextxy(a.x + 17, a.y + 13, a.name);
-		setcolor(c);
-		setfillstyle(1, c);
+	int c = getcolor();
+	setcolor(3);
+	setfillstyle(1, 4);
+	bar(a.x, a.y, a.x + 100, a.y + 40);
+	rectangle(a.x, a.y, a.x + 100, a.y + 40);
+	setcolor(15);
+	setbkcolor(4);
+	settextstyle(2,0,5);
+	outtextxy(a.x + 17, a.y + 13, a.name);
+	setcolor(c);
+	setfillstyle(1, c);
 }
 void systemMenu()
 {
@@ -118,9 +118,9 @@ void tutorial()
 	setbkcolor(7);
 	outtextxy(370, 493, "TUTORIAL");
 }
-void DoThi()
+void graphicDraw()
 {
-	setfillstyle(1, 7);
+	setfillstyle(1, 8);
 	bar(465, 30, 1250, 480);
 	setcolor(0);
 	rectangle(465, 30, 1250, 480);
@@ -164,7 +164,7 @@ void drawUI(){
 	systemMenu();
 	matrixTTTitle();
 	matrixTTDraw();
-	DoThi();
+	graphicDraw();
 	controlMenu();
 }
 int main(int argc, char *argv[])
