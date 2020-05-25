@@ -153,6 +153,8 @@ void drawMatrixTT(){
 	bar(20, 358, 20 + dai, 355 + dai);
 	setcolor(CORNER_COLOR_BUTTON_SELECTED);
 	rectangle(20, 358, 20 + dai, 355 + dai);
+	
+	
 }
 void drawTutorial()
 {
@@ -390,16 +392,35 @@ void processFunction(int type){
 			//DOI TEN 
 			break;
 } }
-void addMouse(Dinh s,int x,int y,bool isSelected,int type){
+bool chooseFunction(Dinh s)
+{
+	int x, y;
+
+	getmouseclick(WM_RBUTTONDOWN,x,y);
+	cout<<x<<y<<endl;
+	if ((x != -1 && y != -1) && (x >= s.x && x <= s.x + 101) && (y >= s.y && y <= s.y + 41))
+	{
+		return true;
+	}
+	return false;
+}
+void addMouse(Dinh s,int &x,int &y,bool &isSelected,int type){
 	if ((x != -1 && y != -1) && (x >= s.x && x <= s.x + 101) && (y >= s.y && y <= s.y + 41))
 	{
 		cout<<s.name;
-		isSelected=true;
 		customButton(s);
-		processFunction(type);
+		if(chooseFunction(s)){
+			processFunction(type);
+		}
+		//isSelected=true;
+	
+	}	
+	else if ((x != -1 && y != -1) && (!(x >= s.x && x <= s.x + 100) || !(y >= s.y && y <= s.y + 40)))
+	{
+		defaultButton(s);
 	}
-				
-	clearMouseClick();
+			
+//	clearMouseClick();
 			
 }
 void processMouse(Dinh s[][10]){
@@ -408,8 +429,7 @@ void processMouse(Dinh s[][10]){
 	while (1)
 		{
 			delay(1);
-			if (ismouseclick((WM_RBUTTONDOWN))){
-				getmouseclick(WM_RBUTTONDOWN, x, y);
+			getmouseclick(WM_MOUSEMOVE, x, y);
 				
 				addMouse(s[0][0], x, y, isSelected, 1);
 				addMouse(s[0][1], x, y, isSelected, 2);
@@ -429,7 +449,7 @@ void processMouse(Dinh s[][10]){
 				addMouse(s[2][2], x, y, isSelected, 16);
 				addMouse(s[2][3], x, y, isSelected, 17);
 				addMouse(s[2][4], x, y, isSelected, 18);
-			}
+			
 		}
 }
 int main(int argc, char *argv[])
