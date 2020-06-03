@@ -2,6 +2,8 @@
 
 #include <graphics.h> 
 #include <iostream> 
+#include <sstream>
+#include <math.h>
 using namespace std;
 
 #define MAX 20
@@ -14,11 +16,12 @@ struct Dinh
 {
 	int x;
 	int y;
-	char* name;
+	char *name;
 };
 
 int nDinh=0;
 Dinh graph[MAX];
+int M[MAX][MAX];
 
 
 void defaultButton(Dinh a)
@@ -59,7 +62,7 @@ void systemMenu(Dinh systemMenu[3])
 	{
 		systemMenu[i].x = we*i + 26;
 		systemMenu[i].y = hi + 201;
-		systemMenu[i].name = new char[10];
+//		systemMenu[i].name = new char[10];
 	}
 	systemMenu[0].name = "MO FILE";
 	systemMenu[1].name = "LUU FILE";
@@ -144,16 +147,65 @@ void matrixTTTitle()
 	setbkcolor(BG_COLOR_MENU);
 	settextstyle(2,0,5);
 	setcolor(0);
-	outtextxy(130, 310, "WEIGHING MATRIX");
+	outtextxy(130, 310, "MA TRAN TRONG SO");
 }	
+string coverIntToString(int number)
+{
+	string result;
+ 	stringstream ss;
+	ss<<number; 
+	ss>>result;
+	return result;  
+}
+int coverStringToInt(string value)
+{
+	int result;
+ 	stringstream ss;
+	ss<<value; 
+	ss>>result;
+	return result;  
+}
 void drawMatrixTT(){
+
+	setfillstyle(1, BG_COLOR_MENU);
+	bar(20, 358, 353, 688);
+	setcolor(CORNER_COLOR_BUTTON_SELECTED);
+	rectangle(20, 358, 353, 688);
+	
 	int D=30;
 	const int dai = 333;
-	setfillstyle(1, BG_COLOR_MENU);
-	bar(20, 358, 20 + dai, 355 + dai);
-	setcolor(CORNER_COLOR_BUTTON_SELECTED);
-	rectangle(20, 358, 20 + dai, 355 + dai);
-	
+	int xx=23;
+	int yy=365;
+	int xNew=33;
+	string temp;
+	if (nDinh<=10 && nDinh!=0)
+		{
+			for (int i=0;i<=nDinh;i++)
+			{
+				for (int j=0;j<nDinh;j++)
+				{	
+					setfillstyle(1, 0);
+					line(xNew+j*D+28,25+dai,xNew+j*D+28,23+dai+(nDinh+1)*D);
+					if (i==0)
+					{
+						setbkcolor(BG_COLOR_MENU);
+						setcolor(0);
+						outtextxy(xNew+(j+1)*D,yy,graph[j].name);
+			
+					}
+					else
+					{
+						temp=coverIntToString(M[i-1][j]);
+						outtextxy(xx,yy+i*D,graph[i-1].name);
+						outtextxy(xNew+(j+1)*D,yy+i*D,&temp[0]);
+		
+					}
+				}
+				setfillstyle(1, 0);
+				line(xNew+nDinh*D+31,25+dai,xNew+nDinh*D+31,23+dai+(nDinh+1)*D);
+				line(20,355+30+i*30,35+(nDinh+1)*30,355+30+i*30);
+			}
+		}
 	
 }
 void drawTutorial()
@@ -197,23 +249,6 @@ void drawUI(Dinh a[][10]){
 	drawMatrixTT();
 	drawGraph();
 }
-//float KhoangCach(int x1, int y1, int x2, int y2)
-//{
-//	float kc;
-//	kc = sqrt((float)(x1 - x2)*(x1 - x2) + (float)(y1 - y2)*(y1 - y2));
-//	return kc;
-//}
-//bool IsDinh(int x,int y)
-//{
-//	for(int i=0;i<n;i++)
-//	{
-//		if (KhoangCach(x,y,dothi[i].x,dothi[i].y)<=BK)
-//		{
-//			return true;
-//		}
-//	}
-//	return false;
-//}
 string removeCharater(string a)
 {
 	string s = "";
@@ -221,14 +256,7 @@ string removeCharater(string a)
 		s += a[i];
 	return s;
 }
-	
-char* convertStringToChar(string str)
-{
-	char *a = new char[str.length() + 1];
-	strcpy(a, str.c_str());
 
-	return a;
-}
 char* createNameDinh(){
 	drawTutorial();
 	char c;
@@ -265,9 +293,86 @@ char* createNameDinh(){
 	return strupr(result);
 }
 
+float distanceTwoPoint(int x1, int y1, int x2, int y2)
+{
+	float kc;
+	kc = sqrt((float)(x1 - x2)*(x1 - x2) + (float)(y1 - y2)*(y1 - y2));
+	return kc;
+}
+
+int isDinh(int x,int y)
+{
+	for(int i=0;i<nDinh;i++)
+	{
+		if (distanceTwoPoint(x,y,graph[i].x,graph[i].y)<=BK)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+void changeColorDinh(int position,int color)
+{
+	setfillstyle(1, color);
+	setcolor(color);
+	pieslice(graph[position].x, graph[position].y, 0, 0, BK);
+	setcolor(15);
+	setbkcolor(color);
+	outtextxy(graph[position].x-15, graph[position].y - 12, graph[position].name);
+}
+void drawArrow(Dinh start, Dinh end, int color)
+{
+	const int R = 12;
+	const double PI = 3.14159265;
+	Dinh d1, d2, d3, d;
+	setcolor(color);
+	line(start.x, start.y, end.x, end.y);
+}
+int createTrongSo()
+{
+	drawTutorial();
+	int kq;
+	char c;
+	string s;
+	outtextxy(370, 520, "Nhap toi da 3 chu so, nhan ENTER de ket thuc");
+	outtextxy(370, 540, "Trong so thuoc 001 den 999");
+	outtextxy(370, 560,"Nhap trong so: ");
+	outtextxy(370, 580, "Nhap trong so bang 0 neu muon xoa canh");
+	outtextxy(525, 560, &s[0]);
+	
+	int i = 0;
+	do{
+		fflush(stdin);
+		while (!kbhit());
+		c = getch();
+		if (c != 13 && c != 8 && i < 3 && toupper(c) >= '0' && toupper(c) <= '9'){
+			i++;
+			s += c;
+		}
+		else if (c == 8 && i > 0){
+			i--;
+			s = removeCharater(s);
+		}
+		drawTutorial();
+		outtextxy(370, 520, "Nhap toi da 3 chu so, nhan ENTER de ket thuc");
+		outtextxy(370, 540, "Trong so thuoc 001 den 999");
+		outtextxy(370, 560,"Nhap trong so: ");
+		outtextxy(370, 580, "Nhap trong so bang 0 neu muon xoa canh");
+		outtextxy(525, 560, &s[0]);
+	} while (c != 13 || i == 0);
+	kq = coverStringToInt(s);
+	return kq;
+}
+void drawTrongSo(Dinh start, Dinh end,int trongSo)
+{
+	char *temp = new char[3];
+	int x,y;
+	x = ((start.x + end.x) / 2);
+	y = ((start.y + end.y) / 2);
+	setbkcolor(8);
+	outtextxy(x+20, y-20, &coverIntToString(trongSo)[0]);
+}
 void createDinh(){
-	clearMouseClick();
-	int x, y;
 
 	while (nDinh<=MAX-1)
 		{
@@ -276,11 +381,12 @@ void createDinh(){
 			settextstyle(8,0,1);
 			outtextxy(370, 520, "Click chuot de them dinh");
 			delay(1);
+			int x, y;
 			
 			if (ismouseclick(WM_LBUTTONDOWN))
 			{
 				getmouseclick(WM_LBUTTONDOWN, x, y);
-				if (x >= (470+BK) && x <= (1255-BK) && y >= (30+BK) && y <= (480-BK) && x!=-1 && y!=-1)
+				if (x >= (470+BK) && x <= (1255-BK) && y >= (30+BK) && y <= (480-BK) && x!=-1 && y!=-1 && isDinh(x,y)==-1 )
 				{
 					graph[nDinh].x = x;
 					graph[nDinh].y = y;
@@ -296,7 +402,6 @@ void createDinh(){
 					{		
 						for (int i = 0; i < nDinh; i++)
 						{	
-							cout<<result<<" "<<graph[i].name<<endl;
 							if(strcmp(result, graph[i].name) == 0){
 								goto back;
 							}
@@ -313,15 +418,73 @@ void createDinh(){
 					setbkcolor(2);
 					outtextxy(graph[nDinh].x-15, graph[nDinh].y - 12, graph[nDinh].name);
 					nDinh++;
+					drawMatrixTT();
 
 				}
 			}
 			else if(ismouseclick(WM_RBUTTONDOWN)){
 				drawTutorial();
+				clearMouseClick();
 				break;
 			}
-
 		};
+}
+void createCanh(){
+	clearMouseClick();
+	drawTutorial();
+	outtextxy(370, 520, "Click vao dinh bat dau");
+	int x, y;
+	int startPosition, endPosition;	
+
+	while (isDinh(x, y)==-1 && x != -1 && y != -1)
+	{
+		while (true)
+		{
+			delay(1);
+			if (ismouseclick(WM_LBUTTONDOWN))
+			{
+				getmouseclick(WM_LBUTTONDOWN, x, y);
+				break;
+			}
+		}
+	}
+	startPosition = isDinh(x, y);
+	changeColorDinh(isDinh(x, y),12);
+	
+	clearMouseClick();
+	drawTutorial();
+	x=0;
+	y=0;
+	outtextxy(370, 520, "Click vao dinh ket thuc");
+	
+	while (isDinh(x, y)==-1 && x != -1 && y != -1)
+	{
+		while (true)
+		{
+			delay(1);
+			if (ismouseclick(WM_LBUTTONDOWN))
+			{
+				getmouseclick(WM_LBUTTONDOWN, x, y);
+				break;
+			}
+		}
+	}
+	endPosition = isDinh(x, y);
+	changeColorDinh(isDinh(x, y),12);
+	
+	drawArrow(graph[startPosition],graph[endPosition],15);
+	
+	changeColorDinh(startPosition,2);
+	changeColorDinh(endPosition,2);
+	
+	int trongSo=createTrongSo();
+	if (trongSo==0)
+	{
+		M[startPosition][endPosition]=0;
+	}
+	else M[startPosition][endPosition]=trongSo;
+	drawTrongSo(graph[startPosition],graph[endPosition],trongSo);
+
 }
 void processFunction(int type){
 	switch (type)
@@ -383,9 +546,23 @@ void processFunction(int type){
 			//XOA DINH
 			break;
 		case 16:
+			if (nDinh>=2)
+			{
+				drawTutorial();
+				createCanh();
+				clearMouseClick();
+			}
+			else
+			{
+				drawTutorial();
+				outtextxy(370, 520, "Khong du dinh");
+				break;
+			}
+			break;
 			//TAO CUNG
 			break;
 		case 17:
+			
 			//DICH DINH
 			break;
 		case 18:
@@ -397,7 +574,6 @@ bool chooseFunction(Dinh s)
 	int x, y;
 
 	getmouseclick(WM_RBUTTONDOWN,x,y);
-	cout<<x<<y<<endl;
 	if ((x != -1 && y != -1) && (x >= s.x && x <= s.x + 101) && (y >= s.y && y <= s.y + 41))
 	{
 		return true;
@@ -407,7 +583,6 @@ bool chooseFunction(Dinh s)
 void addMouse(Dinh s,int &x,int &y,bool &isSelected,int type){
 	if ((x != -1 && y != -1) && (x >= s.x && x <= s.x + 101) && (y >= s.y && y <= s.y + 41))
 	{
-		cout<<s.name;
 		customButton(s);
 		if(chooseFunction(s)){
 			processFunction(type);
@@ -452,14 +627,26 @@ void processMouse(Dinh s[][10]){
 			
 		}
 }
+
+void initM()
+{
+	for (int i=0;i<MAX;i++)
+	{
+		for(int j=0;j<MAX;j++)
+		{
+			M[i][j]=0;
+		}
+		
+	}
+}
 int main(int argc, char *argv[])
 {
 	Dinh a[3][10];
 	initwindow(1280,720);		// init window graphics						// set background
    	cleardevice();
    	drawUI(a);
+   	initM();
    	processMouse(a);
-
 	while(!kbhit()) delay(1);				// pause screen	
 	return 0;
 }
