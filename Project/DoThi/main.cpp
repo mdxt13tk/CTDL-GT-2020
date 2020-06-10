@@ -8,8 +8,10 @@ using namespace std;
 
 #define MAX 20
 #define BK 25
+#define Round(a) (int)(a+0.5) 
 
 const int BG_COLOR_MENU = 7;
+const int BG_COLOR_DINH = 2;
 const int CORNER_COLOR_BUTTON = 8;
 const int CORNER_COLOR_BUTTON_SELECTED = 4;
 struct Dinh
@@ -21,6 +23,8 @@ struct Dinh
 
 int nDinh=0;
 Dinh graph[MAX];
+int nPointDDA=0;
+Dinh pointDDA[1000];
 int M[MAX][MAX];
 
 
@@ -249,6 +253,27 @@ void drawUI(Dinh a[][10]){
 	drawMatrixTT();
 	drawGraph();
 }
+
+void drawDinh()
+{
+	for (int i=0;i<nDinh;i++)
+	{
+	setfillstyle(1, BG_COLOR_DINH);
+	setcolor(BG_COLOR_DINH);
+	pieslice(graph[i].x, graph[i].y, 0, 0, BK);	
+	setcolor(15);
+	setbkcolor(BG_COLOR_DINH);
+	outtextxy(graph[i].x - 15, graph[i].y - 12, graph[i].name);
+	}
+	drawMatrixTT();
+}
+
+void renewGraph()
+{
+	drawGraph();
+	drawDinh();
+	//renewCanh();
+}
 string removeCharater(string a)
 {
 	string s = "";
@@ -311,6 +336,11 @@ int isDinh(int x,int y)
 	}
 	return -1;
 }
+bool isDinhDDA(int x,int y,Dinh a)
+{
+	if(distanceTwoPoint(x,y,a.x,a.y)<=BK) return true;
+	return false;
+}
 void changeColorDinh(int position,int color)
 {
 	setfillstyle(1, color);
@@ -320,13 +350,56 @@ void changeColorDinh(int position,int color)
 	setbkcolor(color);
 	outtextxy(graph[position].x-15, graph[position].y - 12, graph[position].name);
 }
+
+void lineDDA(int x1, int y1, int x2, int y2, int color){       // thuat toan DDA
+    int  Dx = x2 - x1, Dy = y2 - y1;  
+    float x_inc , y_inc;
+    float step=max(abs(Dx),abs(Dy));
+    x_inc=Dx/step;
+    y_inc=Dy/step;
+    float x=x1, y=y1;// Khoi tao cac gia tri ban dau
+    putpixel(x, y, color);
+      
+    int k=1;
+    int i = 0;
+    while(k <=step){
+        k++;
+          // thoi gian tre khi ve 1 diem anh
+        x += x_inc;
+        y += y_inc;
+        putpixel(Round(x),Round(y),color);
+        pointDDA[i].x=x;
+        pointDDA[i].y=y;
+        nPointDDA++;
+        i++;
+    }
+} 
+
+void drawTrianle(Dinh end)
+{
+	for(int i=0 ; i<nPointDDA;i++){	
+		if(isDinhDDA(pointDDA[i].x,pointDDA[i].y,end)){
+			cout<<pointDDA[i].x<<pointDDA[i].y<<endl;
+			int points[]={pointDDA[i].x,pointDDA[i].y,pointDDA[i].x-10,pointDDA[i].y-10,pointDDA[i].x-20,pointDDA[i].y,pointDDA[i].x,pointDDA[i].y};
+			fillpoly(4, points);
+			break;
+		}	
+	}
+}
+
 void drawArrow(Dinh start, Dinh end, int color)
 {
 	const int R = 12;
 	const double PI = 3.14159265;
 	Dinh d1, d2, d3, d;
 	setcolor(color);
-	line(start.x, start.y, end.x, end.y);
+	
+	int x1 = start.x;
+	int x2 = end.x;
+	int y1 = start.y;
+	int y2 = end.y;
+	lineDDA(x1,y1,x2,y2,color);
+	drawTrianle(end);
 }
 int createTrongSo()
 {
@@ -370,8 +443,9 @@ void drawTrongSo(Dinh start, Dinh end,int trongSo)
 	x = ((start.x + end.x) / 2);
 	y = ((start.y + end.y) / 2);
 	setbkcolor(8);
-	outtextxy(x+20, y-20, &coverIntToString(trongSo)[0]);
+	outtextxy(x, y, &coverIntToString(trongSo)[0]);
 }
+
 void createDinh(){
 
 	while (nDinh<=MAX-1)
@@ -391,8 +465,8 @@ void createDinh(){
 					graph[nDinh].x = x;
 					graph[nDinh].y = y;
 					
-					setfillstyle(1, 2);
-					setcolor(2);
+					setfillstyle(1, BG_COLOR_DINH);
+					setcolor(BG_COLOR_DINH);
 					pieslice(graph[nDinh].x, graph[nDinh].y, 0, 0, BK);
 					graph[nDinh].name = new char[3];
 				back:char * result = new char[3];
@@ -415,7 +489,7 @@ void createDinh(){
 					}
 			
 					setcolor(15);
-					setbkcolor(2);
+					setbkcolor(BG_COLOR_DINH);
 					outtextxy(graph[nDinh].x-15, graph[nDinh].y - 12, graph[nDinh].name);
 					nDinh++;
 					drawMatrixTT();
@@ -423,7 +497,7 @@ void createDinh(){
 				}
 			}
 			else if(ismouseclick(WM_RBUTTONDOWN)){
-				drawTutorial();
+				renewGraph();
 				clearMouseClick();
 				break;
 			}
@@ -484,7 +558,7 @@ void createCanh(){
 	}
 	else M[startPosition][endPosition]=trongSo;
 	drawTrongSo(graph[startPosition],graph[endPosition],trongSo);
-
+	drawMatrixTT();
 }
 void processFunction(int type){
 	switch (type)
