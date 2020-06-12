@@ -4,30 +4,9 @@
 #include <math.h>
 
 #include "include/myHelper.h"
+#include "include/myGlobalVariable.h"
 
 using namespace std;
-
-#define MAX 20
-#define BK 25
-#define Round(a) (int)(a + 0.5)
-
-const int BG_COLOR_MENU = 7;
-const int BG_COLOR_DINH = 2;
-const int CORNER_COLOR_BUTTON = 8;
-const int CORNER_COLOR_BUTTON_SELECTED = 4;
-
-struct Dinh
-{
-	int x;
-	int y;
-	char *name;
-};
-
-int nDinh = 0;
-Dinh graph[MAX];
-int nPointDDA = 0;
-Dinh pointDDA[1000];
-int MatrixWeight[MAX][MAX];
 
 void defaultButton(Dinh a)
 {
@@ -320,30 +299,6 @@ char *createNameDinh()
 	return strupr(result);
 }
 
-float distanceTwoPoint(int x1, int y1, int x2, int y2)
-{
-	float kc;
-	kc = sqrt((float)(x1 - x2) * (x1 - x2) + (float)(y1 - y2) * (y1 - y2));
-	return kc;
-}
-
-int isDinh(int x, int y)
-{
-	for (int i = 0; i < nDinh; i++)
-	{
-		if (distanceTwoPoint(x, y, graph[i].x, graph[i].y) <= BK)
-		{
-			return i;
-		}
-	}
-	return -1;
-}
-bool isDinhDDA(int x, int y, Dinh a)
-{
-	if (distanceTwoPoint(x, y, a.x, a.y) <= BK)
-		return true;
-	return false;
-}
 void changeColorDinh(int position, int color)
 {
 	setfillstyle(1, color);
@@ -354,48 +309,9 @@ void changeColorDinh(int position, int color)
 	outtextxy(graph[position].x - 15, graph[position].y - 12, graph[position].name);
 }
 
-void lineDDA(int x1, int y1, int x2, int y2, int color)
-{ // thuat toan DDA
-	int Dx = x2 - x1, Dy = y2 - y1;
-	float x_inc, y_inc;
-	float step = max(abs(Dx), abs(Dy));
-	x_inc = Dx / step;
-	y_inc = Dy / step;
-	float x = x1, y = y1; // Khoi tao cac gia tri ban dau
-	putpixel(x, y, color);
-
-	int k = 1;
-	int i = 0;
-	while (k <= step)
-	{
-		k++;
-		// thoi gian tre khi ve 1 diem anh
-		x += x_inc;
-		y += y_inc;
-		putpixel(Round(x), Round(y), color);
-		pointDDA[i].x = x;
-		pointDDA[i].y = y;
-		nPointDDA++;
-		i++;
-	}
-}
-
-void drawTriangle(Dinh end)
+Dinh drawArrow(Dinh start, Dinh end, int color)
 {
-	for (int i = 0; i < nPointDDA; i++)
-	{
-		if (isDinhDDA(pointDDA[i].x, pointDDA[i].y, end))
-		{
-			cout << pointDDA[i].x << pointDDA[i].y << endl;
-			int points[] = {pointDDA[i].x, pointDDA[i].y, pointDDA[i].x - 10, pointDDA[i].y - 10, pointDDA[i].x - 20, pointDDA[i].y, pointDDA[i].x, pointDDA[i].y};
-			fillpoly(4, points);
-			break;
-		}
-	}
-}
-
-void drawArrow(Dinh start, Dinh end, int color)
-{
+	Dinh dinhtrongso;
 	setcolor(color);
 
 	int x1 = start.x;
@@ -403,45 +319,35 @@ void drawArrow(Dinh start, Dinh end, int color)
 	int y1 = start.y;
 	int y2 = end.y;
 
-	int xG, yG, xVTPT, yVTPT, xG1, yG1;
-	float lenVTPT, k = 0, lenAG;
-	xG = (x1 + x2) / 2;
-	yG = (y1 + y2) / 2;
+	int xG, yG, xVTPT, yVTPT, xG1, yG1, lenVTPT, lenAG;
+	float k;
+	xG = Round((x1 + x2) / 2.0f);
+	yG = Round((y1 + y2) / 2.0f);
 	xVTPT = y1 - y2;
 	yVTPT = x2 - x1;
-	lenVTPT = sqrt(pow(xVTPT, 2) + pow(yVTPT, 2));
+	lenVTPT = Round(sqrt(pow(xVTPT, 2) + pow(yVTPT, 2)));
 	lenAG = distanceTwoPoint(x1, y1, xG, yG);
-	k = lenAG / (lenVTPT);
-	xG1 = xG + k * xVTPT;
-	yG1 = yG + k * yVTPT;
-	if (0)
+	k = (float)lenAG / lenVTPT;
+	xG1 = Round(xG + k * xVTPT);
+	yG1 = Round(yG + k * yVTPT);
+	if (1)
 	{
 		int px[3] = {x1, xG1, x2};
 		int py[3] = {y1, yG1, y2};
-		drawBezier(px, py, color, 3);
+		drawBezier(px, py, 3, color);
+		dinhtrongso.x = xG1;
+		dinhtrongso.y = yG1;
 	}
 	else
 	{
 		int px[2] = {x1, x2};
 		int py[2] = {y1, y2};
-		drawBezier(px, py, color, 2);
+		drawBezier(px, py, 2, color);
+		dinhtrongso.x = Round(x1 + x2) / 2.0f;
+		dinhtrongso.y = Round(y1 + y2) / 2.0f;
 	}
+	return dinhtrongso;
 }
-
-// void drawArrow(Dinh start, Dinh end, int color)
-// {
-
-// 	Dinh d1, d2, d3, d;
-// 	setcolor(color);
-
-// 	int x1 = start.x;
-// 	int x2 = end.x;
-// 	int y1 = start.y;
-// 	int y2 = end.y;
-// 	//lineDDA(x1, y1, x2, y2, color);
-// 	drawArrow2(x1, y1, x2, y2, color);
-// 	drawTriangle(end);
-// }
 
 int createTrongSo()
 {
@@ -482,19 +388,16 @@ int createTrongSo()
 	kq = coverStringToInt(s);
 	return kq;
 }
-void drawTrongSo(Dinh start, Dinh end, int trongSo)
+
+void drawTrongSo(Dinh dinhtrongso, int trongSo)
 {
-	char *temp = new char[3];
 	int x, y;
-	x = ((start.x + end.x) / 2);
-	y = ((start.y + end.y) / 2);
 	setbkcolor(8);
-	outtextxy(x, y, &coverIntToString(trongSo)[0]);
+	outtextxy(dinhtrongso.x, dinhtrongso.y, &coverIntToString(trongSo)[0]);
 }
 
 void createDinh()
 {
-
 	while (nDinh <= MAX - 1)
 	{
 		delay(1);
@@ -595,7 +498,7 @@ void createCanh()
 	endPosition = isDinh(x, y);
 	changeColorDinh(isDinh(x, y), 12);
 
-	drawArrow(graph[startPosition], graph[endPosition], 15);
+	Dinh dinhtrongso = drawArrow(graph[startPosition], graph[endPosition], 15);
 
 	changeColorDinh(startPosition, 2);
 	changeColorDinh(endPosition, 2);
@@ -607,7 +510,7 @@ void createCanh()
 	}
 	else
 		MatrixWeight[startPosition][endPosition] = trongSo;
-	drawTrongSo(graph[startPosition], graph[endPosition], trongSo);
+	drawTrongSo(dinhtrongso, trongSo);
 	drawMatrixTT();
 }
 void processFunction(int type)
