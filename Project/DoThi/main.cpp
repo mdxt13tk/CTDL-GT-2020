@@ -330,21 +330,21 @@ Dinh drawArrow(Dinh start, Dinh end, int color)
 	k = (float)lenAG / lenVTPT;
 	xG1 = Round(xG + k * xVTPT);
 	yG1 = Round(yG + k * yVTPT);
-	if (1)
+	if (0)
 	{
 		int px[3] = {x1, xG1, x2};
 		int py[3] = {y1, yG1, y2};
 		drawBezier(px, py, 3, color);
-		dinhtrongso.x = xG1;
-		dinhtrongso.y = yG1;
+		dinhtrongso.x = Round((xG1 + xG) / 2.0f);
+		dinhtrongso.y = Round((yG1 + yG) / 2.0f);
 	}
 	else
 	{
 		int px[2] = {x1, x2};
 		int py[2] = {y1, y2};
 		drawBezier(px, py, 2, color);
-		dinhtrongso.x = Round(x1 + x2) / 2.0f;
-		dinhtrongso.y = Round(y1 + y2) / 2.0f;
+		dinhtrongso.x = Round((x1 + x2) / 2.0f);
+		dinhtrongso.y = Round((y1 + y2) / 2.0f);
 	}
 	return dinhtrongso;
 }
