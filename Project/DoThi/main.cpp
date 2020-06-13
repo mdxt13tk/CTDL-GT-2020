@@ -1,6 +1,7 @@
 #include <graphics.h>
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include <math.h>
 
 #include "include/myHelper.h"
@@ -514,6 +515,118 @@ void createCanh()
 	drawMatrixTT();
 	//renewGraph();
 }
+string processFileName()
+{
+	drawTutorial();
+	char c;
+	string fileName;
+	char* result = new char[20];
+	string s;
+	outtextxy(370, 520, "Nhap toi da 15 chu va so. Nhan ENTER de ket thuc");
+	outtextxy(370, 540, "Ten file: ");
+	outtextxy(485, 540, &s[0]);
+	int i = 0;
+	do
+	{
+		fflush(stdin);
+		while (!kbhit());
+		c = getch();
+		if (c != 13 && c != 8 && i < 15 && ((c>=65 && c<=90) ||(c>=97 && c<=122) || (c>=48 && c<=57) ))
+		{
+			i++;
+			s += c;
+		}
+		else if (c == 8 && i > 0){
+			i--;
+			s = removeCharater(s);
+		}
+	//	kq = StringToChar(s);
+		drawTutorial();
+		outtextxy(370, 520, "Nhap toi da 15 chu va so. Nhan ENTER de ket thuc");
+		outtextxy(370, 540, "Ten file: ");
+		outtextxy(485, 540, &s[0]);
+	} while (c != 13 || i == 0);
+	return s;
+}
+void saveFile()	
+{
+	string fileName = processFileName();
+//	tenfile=s;
+	ofstream f;
+	
+	fileName += ".txt";
+	f.open(&fileName[0]);
+	
+	f<<nDinh<<endl;
+	for (int i=0;i<nDinh;i++)
+	{
+		for (int j=0;j<nDinh;j++)
+		{
+				f<<MatrixWeight[i][j]<<" ";
+		}
+		f<<endl;
+	}
+	for (int i=0;i<nDinh;i++)
+	{
+		f<<graph[i].x<<" "<<graph[i].y<<" "<<graph[i].name<<endl;
+	}
+	outtextxy(370, 560, "LUU FILE HOAN TAT !!!");
+	f.close();	
+	outtextxy(370,580,"Nhap 1 phim bat ki de tiep tuc ...");
+	getch();
+	drawTutorial();
+}
+void openFile()	
+{
+	string fileNames = processFileName();
+
+	ifstream f;
+	
+	fileNames += ".txt";
+	f.open(&fileNames[0]);
+	if (f.fail())
+	{
+		drawTutorial();
+		outtextxy(370, 520, "File khong ton tai");
+		return;
+	}else{
+		fileName=strupr(&fileNames[0]);
+	}
+	f>>nDinh;
+	for (int i=0;i<nDinh;i++)
+	{
+		for (int j=0;j<nDinh;j++)
+		{
+			f>>MatrixWeight[i][j];
+		}
+	}
+	for (int i=0;i<nDinh;i++)
+	{
+		graph[i].name = new char[3];
+		f>>graph[i].x;
+		f>>graph[i].y;
+		f>>graph[i].name;
+	}
+	outtextxy(370, 560, "DOC FILE HOAN TAT !!!");
+	f.close();	
+	renewGraph();
+}
+void ClearDoThi()
+{
+	for (int i=0;i<nDinh;i++)
+	{
+		graph[i].x=NULL;
+		graph[i].y=NULL;
+		graph[i].name=NULL;
+		for (int j=0;j<nDinh;j++)
+		{
+			MatrixWeight[i][j]=NULL;
+		}
+	}
+	nDinh=0;
+	fileName="";
+	renewGraph();	
+}
 void processFunction(int type)
 {
 	switch (type)
@@ -549,13 +662,60 @@ void processFunction(int type)
 		//TPLT
 		break;
 	case 11:
-		//OPEN FILE
+		if (nDinh!=0)
+		{
+			char a;
+			drawTutorial();
+			outtextxy(370, 520, "Ban co muon xoa do thi hien tai? (Y/N)");
+			a= getch();
+			if (a ==89 || a==121)
+			{
+				ClearDoThi();
+				openFile();
+			}
+			else 
+			{
+				drawTutorial();
+				break;
+			}
+		}
+		else
+		{
+			openFile();
+		} 
 		break;
 	case 12:
-		//SAVE FILE
+		drawTutorial();
+		if(nDinh!=0)
+		{
+			saveFile();	
+		}
+		else
+		{
+			outtextxy(370, 520, "Khong co gi de luu !");
+		}
 		break;
 	case 13:
-		//CLEAR GRAPH
+		drawTutorial();
+		if (nDinh!=0)
+		{
+			char a;
+			outtextxy(370, 520, "Ban co muon xoa do thi hien tai? (Y/N)");
+			a= getch();
+			if (a ==89 || a==121)
+			{
+				ClearDoThi();
+			}
+			else 
+			{
+				drawTutorial();
+				break;
+			}
+		}
+		else
+		{
+			outtextxy(370, 520, "Khong co gi de xoa !");
+		} 
 		break;
 	case 14:
 		if (nDinh < MAX)

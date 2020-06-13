@@ -121,5 +121,8 @@ void drawTrongSo(Dinh dinhtrongso, int trongSo)
 {
 	int x, y;
 	setbkcolor(8);
+	int currentColor = getcolor();
+	setcolor(15);
 	outtextxy(dinhtrongso.x, dinhtrongso.y, &coverIntToString(trongSo)[0]);
+	setcolor(currentColor);
 }
