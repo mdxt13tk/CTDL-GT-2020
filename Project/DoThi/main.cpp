@@ -540,7 +540,6 @@ string processFileName()
 			i--;
 			s = removeCharater(s);
 		}
-	//	kq = StringToChar(s);
 		drawTutorial();
 		outtextxy(370, 520, "Nhap toi da 15 chu va so. Nhan ENTER de ket thuc");
 		outtextxy(370, 540, "Ten file: ");
@@ -551,9 +550,7 @@ string processFileName()
 void saveFile()	
 {
 	string fileName = processFileName();
-//	tenfile=s;
 	ofstream f;
-	
 	fileName += ".txt";
 	f.open(&fileName[0]);
 	
@@ -579,9 +576,7 @@ void saveFile()
 void openFile()	
 {
 	string fileNames = processFileName();
-
 	ifstream f;
-	
 	fileNames += ".txt";
 	f.open(&fileNames[0]);
 	if (f.fail())
@@ -626,6 +621,46 @@ void ClearDoThi()
 	nDinh=0;
 	fileName="";
 	renewGraph();	
+}
+void changeNameDinh()
+{
+	int x,y,position;
+	outtextxy(370, 520, "Nhap vao dinh can doi ten, khong duoc trung voi dinh da ton tai");
+	while (isDinh(x, y) == -1 && x != -1 && y != -1)
+	{
+		while (true)
+		{
+			delay(1);
+			if (ismouseclick(WM_LBUTTONDOWN))
+			{
+				getmouseclick(WM_LBUTTONDOWN, x, y);
+				break;
+			}
+		}
+	}
+	position= isDinh(x, y);
+	back:
+		char *result = new char[3];
+		result = createNameDinh();
+
+		if (nDinh > 0)
+		{
+			for (int i = 0; i < nDinh; i++)
+			{
+				if (strcmp(result, graph[i].name) == 0)
+				{
+					goto back;
+				}
+			}
+		}
+
+	for (int i = 0; i < 4; i++)
+	{
+		graph[position].name[i] = result[i];
+	}
+	changeColorDinh(position, 2);
+	drawTutorial();
+	drawMatrixTT();
 }
 void processFunction(int type)
 {
@@ -752,9 +787,19 @@ void processFunction(int type)
 	case 17:
 
 		//DICH DINH
+		
 		break;
 	case 18:
-		//DOI TEN
+		drawTutorial();
+		if (nDinh>0)
+		{
+			changeNameDinh();
+		}
+		else
+		{
+			outtextxy(370, 520, "Khong du dinh");
+			break;	
+		}
 		break;
 	}
 }
