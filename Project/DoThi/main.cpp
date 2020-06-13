@@ -330,7 +330,7 @@ Dinh drawArrow(Dinh start, Dinh end, int color)
 	k = (float)lenAG / lenVTPT;
 	xG1 = Round(xG + k * xVTPT);
 	yG1 = Round(yG + k * yVTPT);
-	if (0)
+	if (1)
 	{
 		int px[3] = {x1, xG1, x2};
 		int py[3] = {y1, yG1, y2};
