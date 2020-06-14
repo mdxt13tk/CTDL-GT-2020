@@ -444,6 +444,7 @@ void createDinh()
 				nDinh++;
 				drawMatrixTT();
 			}
+			clearMouseClick();
 		}
 		else if (ismouseclick(WM_RBUTTONDOWN))
 		{
@@ -455,65 +456,74 @@ void createDinh()
 }
 void createCanh()
 {
+	while(1){
 	clearMouseClick();
 	drawTutorial();
 	outtextxy(370, 520, "Click vao dinh bat dau");
 	int x, y;
 	int startPosition, endPosition;
-
-	while (isDinh(x, y) == -1 && x != -1 && y != -1)
+	delay(1);
+	if (ismouseclick(WM_LBUTTONDOWN))
 	{
-		while (true)
+		getmouseclick(WM_LBUTTONDOWN, x, y);
+		while (isDinh(x, y) == -1 && x != -1 && y != -1)
 		{
-			delay(1);
-			if (ismouseclick(WM_LBUTTONDOWN))
+			while (true)
 			{
-				getmouseclick(WM_LBUTTONDOWN, x, y);
-				break;
+				delay(1);
+				if (ismouseclick(WM_LBUTTONDOWN))
+				{
+					getmouseclick(WM_LBUTTONDOWN, x, y);
+					break;
+				}
 			}
 		}
-	}
-	startPosition = isDinh(x, y);
-	changeColorDinh(isDinh(x, y), 12);
-
-	clearMouseClick();
-	drawTutorial();
-	x = 0;
-	y = 0;
-	outtextxy(370, 520, "Click vao dinh ket thuc");
+		startPosition = isDinh(x, y);
+		changeColorDinh(isDinh(x, y), 12);
 	
-	while (isDinh(x, y) == -1 || isStartDinh(x,y,graph[startPosition])==1)
-	{
-		while (true)
+		clearMouseClick();
+		drawTutorial();
+		x = 0;
+		y = 0;
+		outtextxy(370, 520, "Click vao dinh ket thuc");
+		
+		while (isDinh(x, y) == -1 || isStartDinh(x,y,graph[startPosition])==1)
 		{
-			delay(1);
-			if (ismouseclick(WM_LBUTTONDOWN))
+			while (true)
 			{
-				getmouseclick(WM_LBUTTONDOWN, x, y);
-				break;
+				delay(1);
+				if (ismouseclick(WM_LBUTTONDOWN))
+				{
+					getmouseclick(WM_LBUTTONDOWN, x, y);
+					break;
+				}
 			}
 		}
-	}
-	endPosition = isDinh(x, y);
-	changeColorDinh(isDinh(x, y), 12);
-	MatrixWeight[startPosition][endPosition]=0;
-	Dinh dinhtrongso = drawArrow(startPosition, endPosition, 15);
-
-	changeColorDinh(startPosition, 2);
-	changeColorDinh(endPosition, 2);
-
-	int trongSo = createTrongSo();
-	if (trongSo == 0)
-	{
-		MatrixWeight[startPosition][endPosition] = 0;
-		drawArrow(startPosition, endPosition, CORNER_COLOR_BUTTON);
-	}
-	else
-		MatrixWeight[startPosition][endPosition] = trongSo;
+		endPosition = isDinh(x, y);
+		changeColorDinh(isDinh(x, y), 12);
+		MatrixWeight[startPosition][endPosition]=0;
+		Dinh dinhtrongso = drawArrow(startPosition, endPosition, 15);
 	
-	drawTrongSo(dinhtrongso, trongSo);
-	drawMatrixTT();
-	//renewGraph();
+		changeColorDinh(startPosition, 2);
+		changeColorDinh(endPosition, 2);
+	
+		int trongSo = createTrongSo();
+		if (trongSo == 0)
+		{
+			MatrixWeight[startPosition][endPosition] = 0;
+			drawArrow(startPosition, endPosition, CORNER_COLOR_BUTTON);
+		}
+		else
+			MatrixWeight[startPosition][endPosition] = trongSo;
+		
+		drawTrongSo(dinhtrongso, trongSo);
+		drawMatrixTT();
+		}
+	else if (ismouseclick(WM_RBUTTONDOWN))
+	{	
+		break;
+	}
+	}	
 }
 string processFileName()
 {
@@ -662,6 +672,92 @@ void changeNameDinh()
 	drawTutorial();
 	drawMatrixTT();
 }
+void deleteDinh(Dinh &one, Dinh &two)
+{
+	one.x=two.x;
+	one.y=two.y;
+	strcpy(one.name,two.name);
+}
+void deleteLastDinh()
+{
+	graph[nDinh-1].x=NULL;
+	graph[nDinh-1].y=NULL;
+	graph[nDinh-1].name=NULL;
+}
+void coutMt(){
+	cout<<endl;
+	for (int i=0;i<nDinh;i++)
+	{
+		for (int j=0;j<nDinh;j++)
+		{
+			cout<<MatrixWeight[i][j];
+		}
+		cout<<endl;;
+	}
+}
+void removeDinh()
+{
+	int x,y,position;
+	outtextxy(370, 520, "Nhap vao dinh can xoa");
+
+	while (isDinh(x, y) == -1 && x != -1 && y != -1)
+	{
+		while (true)
+		{
+			delay(1);
+			if (ismouseclick(WM_LBUTTONDOWN))
+			{
+				getmouseclick(WM_LBUTTONDOWN, x, y);
+				break;
+			}
+		}
+	}
+	
+	position= isDinh(x, y);
+	
+	// Xóa dinh cuoi cùng
+	if (position==nDinh-1)
+	{
+		deleteLastDinh();
+	}
+	// Xóa dinh bat ky 
+	else
+	{
+		for (int i=position;i<nDinh-1;i++)
+		{
+			deleteDinh(graph[i],graph[i+1]);
+		}
+	}
+	deleteLastDinh();
+	
+	// Xóa canh cuoi cùng
+	if(position==nDinh-1)
+	{
+		for (int i=0;i<nDinh;i++)
+		{
+			MatrixWeight[i][nDinh-1]=0;
+			MatrixWeight[nDinh-1][i]=0;
+		}
+		
+	}
+	// Xóa canh bat ki
+	else
+	{
+		for (int i = position; i < nDinh - 1; ++i){
+			for (int j = 0; j < nDinh; ++j){
+				MatrixWeight[i][j] = MatrixWeight[i + 1][j];
+			}
+		}
+						
+		for (int i = 0; i < nDinh; ++i){
+			for (int j = position; j < nDinh - 1; ++j){
+				MatrixWeight[i][j] = MatrixWeight[i][j + 1];
+			}
+		}	
+	}
+	nDinh--;
+	renewGraph();	
+}
 void processFunction(int type)
 {
 	switch (type)
@@ -768,6 +864,17 @@ void processFunction(int type)
 		break;
 	case 15:
 		//XOA DINH
+		drawTutorial();
+		if(nDinh>0)
+		{
+			removeDinh();
+		}
+		else 
+		{
+			drawTutorial();
+			outtextxy(370, 520, "KHONG DU DINH ");
+			break;
+		}
 		break;
 	case 16:
 		//TAO CUNG
