@@ -10,6 +10,7 @@
 using namespace std;
 
 void renewGraph();
+bool isWorkingZone(int x,int y);
 void defaultButton(Dinh a)
 {
 	int c = getcolor();
@@ -409,7 +410,7 @@ void createDinh()
 		if (ismouseclick(WM_LBUTTONDOWN))
 		{
 			getmouseclick(WM_LBUTTONDOWN, x, y);
-			if (x >= (470 + BK) && x <= (1255 - BK) && y >= (30 + BK) && y <= (480 - BK) && x != -1 && y != -1 && isDinh(x, y) == -1)
+			if (isWorkingZone(x,y) && isDinh(x, y) == -1)
 			{
 				graph[nDinh].x = x;
 				graph[nDinh].y = y;
@@ -758,6 +759,84 @@ void removeDinh()
 	nDinh--;
 	renewGraph();	
 }
+bool isWorkingZone(int x, int y)
+{
+	if (x >= (470 + BK) && x <= (1255 - BK) && y >= (30 + BK) && y <= (480 - BK) && x != -1 && y != -1)
+	{
+		return true;
+	}
+	return false;
+}
+void moveDinh()
+{
+	int x,y,position;
+
+	outtextxy(370, 520, "Chon dinh va keo toi vi tri can toi !");
+	while (true)
+	{
+		drawTutorial();
+		outtextxy(370, 520, "Chon dinh va keo toi vi tri can toi !");
+		x=0;
+		y=0;
+		delay(1);
+		if(ismouseclick(WM_LBUTTONDOWN)){
+				while (isDinh(x, y) == -1 && x != -1 && y != -1)
+		{
+			while (true)
+			{
+				delay(1);
+				if (ismouseclick(WM_LBUTTONDOWN))
+				{
+					getmouseclick(WM_LBUTTONDOWN, x, y);
+					break;
+				}
+			}
+		}
+		position=isDinh(x,y);
+		clearMouseClick();
+		while(true)
+		{
+			delay(.001);
+			if(ismouseclick(WM_LBUTTONUP))
+			{
+				getmouseclick(WM_LBUTTONUP,x,y);
+			}
+			if (isWorkingZone(x,y) && isDinh(x, y) == -1){
+				graph[position].x=x;
+				graph[position].y=y;
+				break;
+			}
+		}
+		clearMouseClick();
+		renewGraph();
+		}
+		else if(ismouseclick(WM_RBUTTONDOWN)){
+				clearMouseClick();
+				renewGraph();
+			break;
+		}
+	
+	}
+
+			
+//		position=isDinh(x,y);
+//		drawTutorial();
+//		outtextxy(370, 520, "Chon vao noi di chuyen toi!");
+//		while(true)
+//		{
+//			delay(.001);
+//			if(ismouseclick(WM_LBUTTONDOWN))
+//			{
+//				getmouseclick(WM_LBUTTONDOWN,x,y);
+//			}
+//			if (x >= (470 + BK) && x <= (1255 - BK) && y >= (30 + BK) && y <= (480 - BK) && x != -1 && y != -1 && isDinh(x, y) == -1){
+//				graph[position].x=x;
+//				graph[position].y=y;
+//				break;
+//			}
+//		}
+//		renewGraph();
+}
 void processFunction(int type)
 {
 	switch (type)
@@ -892,9 +971,20 @@ void processFunction(int type)
 		}
 		break;
 	case 17:
-
 		//DICH DINH
-		
+	
+		if (nDinh >0)
+		{
+			drawTutorial();
+			clearMouseClick();
+			moveDinh();
+		}
+		else
+		{
+			drawTutorial();
+			outtextxy(370, 520, "Khong du dinh");
+			break;
+		}
 		break;
 	case 18:
 		drawTutorial();
@@ -981,6 +1071,7 @@ void initMatrixWeight()
 }
 void renewGraph()
 {
+	clearMouseClick();
 	drawGraph();
 	drawDinh();
 	drawAllCanh();
