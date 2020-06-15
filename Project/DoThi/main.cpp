@@ -1,6 +1,7 @@
 #include <graphics.h>
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include <math.h>
 
 #include "include/myHelper.h"
@@ -9,6 +10,7 @@
 using namespace std;
 
 void renewGraph();
+bool isWorkingZone(int x,int y);
 void defaultButton(Dinh a)
 {
 	int c = getcolor();
@@ -408,7 +410,7 @@ void createDinh()
 		if (ismouseclick(WM_LBUTTONDOWN))
 		{
 			getmouseclick(WM_LBUTTONDOWN, x, y);
-			if (x >= (470 + BK) && x <= (1255 - BK) && y >= (30 + BK) && y <= (480 - BK) && x != -1 && y != -1 && isDinh(x, y) == -1)
+			if (isWorkingZone(x,y) && isDinh(x, y) == -1)
 			{
 				graph[nDinh].x = x;
 				graph[nDinh].y = y;
@@ -443,6 +445,7 @@ void createDinh()
 				nDinh++;
 				drawMatrixTT();
 			}
+			clearMouseClick();
 		}
 		else if (ismouseclick(WM_RBUTTONDOWN))
 		{
@@ -454,11 +457,249 @@ void createDinh()
 }
 void createCanh()
 {
+	while(1){
 	clearMouseClick();
 	drawTutorial();
 	outtextxy(370, 520, "Click vao dinh bat dau");
 	int x, y;
 	int startPosition, endPosition;
+	delay(1);
+	if (ismouseclick(WM_LBUTTONDOWN))
+	{
+		getmouseclick(WM_LBUTTONDOWN, x, y);
+		while (isDinh(x, y) == -1 && x != -1 && y != -1)
+		{
+			while (true)
+			{
+				delay(1);
+				if (ismouseclick(WM_LBUTTONDOWN))
+				{
+					getmouseclick(WM_LBUTTONDOWN, x, y);
+					break;
+				}
+			}
+		}
+		startPosition = isDinh(x, y);
+		changeColorDinh(isDinh(x, y), 12);
+	
+		clearMouseClick();
+		drawTutorial();
+		x = 0;
+		y = 0;
+		outtextxy(370, 520, "Click vao dinh ket thuc");
+		
+		while (isDinh(x, y) == -1 || isStartDinh(x,y,graph[startPosition])==1)
+		{
+			while (true)
+			{
+				delay(1);
+				if (ismouseclick(WM_LBUTTONDOWN))
+				{
+					getmouseclick(WM_LBUTTONDOWN, x, y);
+					break;
+				}
+			}
+		}
+		endPosition = isDinh(x, y);
+		changeColorDinh(isDinh(x, y), 12);
+		MatrixWeight[startPosition][endPosition]=0;
+		Dinh dinhtrongso = drawArrow(startPosition, endPosition, 15);
+	
+		changeColorDinh(startPosition, 2);
+		changeColorDinh(endPosition, 2);
+	
+		int trongSo = createTrongSo();
+		if (trongSo == 0)
+		{
+			MatrixWeight[startPosition][endPosition] = 0;
+			drawArrow(startPosition, endPosition, CORNER_COLOR_BUTTON);
+		}
+		else
+			MatrixWeight[startPosition][endPosition] = trongSo;
+		
+		drawTrongSo(dinhtrongso, trongSo);
+		drawMatrixTT();
+		}
+	else if (ismouseclick(WM_RBUTTONDOWN))
+	{	
+		break;
+	}
+	}	
+}
+string processFileName()
+{
+	drawTutorial();
+	char c;
+	string fileName;
+	char* result = new char[20];
+	string s;
+	outtextxy(370, 520, "Nhap toi da 15 chu va so. Nhan ENTER de ket thuc");
+	outtextxy(370, 540, "Ten file: ");
+	outtextxy(485, 540, &s[0]);
+	int i = 0;
+	do
+	{
+		fflush(stdin);
+		while (!kbhit());
+		c = getch();
+		if (c != 13 && c != 8 && i < 15 && ((c>=65 && c<=90) ||(c>=97 && c<=122) || (c>=48 && c<=57) ))
+		{
+			i++;
+			s += c;
+		}
+		else if (c == 8 && i > 0){
+			i--;
+			s = removeCharater(s);
+		}
+		drawTutorial();
+		outtextxy(370, 520, "Nhap toi da 15 chu va so. Nhan ENTER de ket thuc");
+		outtextxy(370, 540, "Ten file: ");
+		outtextxy(485, 540, &s[0]);
+	} while (c != 13 || i == 0);
+	return s;
+}
+void saveFile()	
+{
+	string fileName = processFileName();
+	ofstream f;
+	fileName += ".txt";
+	f.open(&fileName[0]);
+	
+	f<<nDinh<<endl;
+	for (int i=0;i<nDinh;i++)
+	{
+		for (int j=0;j<nDinh;j++)
+		{
+				f<<MatrixWeight[i][j]<<" ";
+		}
+		f<<endl;
+	}
+	for (int i=0;i<nDinh;i++)
+	{
+		f<<graph[i].x<<" "<<graph[i].y<<" "<<graph[i].name<<endl;
+	}
+	outtextxy(370, 560, "LUU FILE HOAN TAT !!!");
+	f.close();	
+	outtextxy(370,580,"Nhap 1 phim bat ki de tiep tuc ...");
+	getch();
+	drawTutorial();
+}
+void openFile()	
+{
+	string fileNames = processFileName();
+	ifstream f;
+	fileNames += ".txt";
+	f.open(&fileNames[0]);
+	if (f.fail())
+	{
+		drawTutorial();
+		outtextxy(370, 520, "File khong ton tai");
+		return;
+	}else{
+		fileName=strupr(&fileNames[0]);
+	}
+	f>>nDinh;
+	for (int i=0;i<nDinh;i++)
+	{
+		for (int j=0;j<nDinh;j++)
+		{
+			f>>MatrixWeight[i][j];
+		}
+	}
+	for (int i=0;i<nDinh;i++)
+	{
+		graph[i].name = new char[3];
+		f>>graph[i].x;
+		f>>graph[i].y;
+		f>>graph[i].name;
+	}
+	outtextxy(370, 560, "DOC FILE HOAN TAT !!!");
+	f.close();	
+	renewGraph();
+}
+void ClearDoThi()
+{
+	for (int i=0;i<nDinh;i++)
+	{
+		graph[i].x=NULL;
+		graph[i].y=NULL;
+		graph[i].name=NULL;
+		for (int j=0;j<nDinh;j++)
+		{
+			MatrixWeight[i][j]=NULL;
+		}
+	}
+	nDinh=0;
+	fileName="";
+	renewGraph();	
+}
+void changeNameDinh()
+{
+	int x,y,position;
+	outtextxy(370, 520, "Nhap vao dinh can doi ten, khong duoc trung voi dinh da ton tai");
+	while (isDinh(x, y) == -1 && x != -1 && y != -1)
+	{
+		while (true)
+		{
+			delay(1);
+			if (ismouseclick(WM_LBUTTONDOWN))
+			{
+				getmouseclick(WM_LBUTTONDOWN, x, y);
+				break;
+			}
+		}
+	}
+	position= isDinh(x, y);
+	back:
+		char *result = new char[3];
+		result = createNameDinh();
+
+		if (nDinh > 0)
+		{
+			for (int i = 0; i < nDinh; i++)
+			{
+				if (strcmp(result, graph[i].name) == 0)
+				{
+					goto back;
+				}
+			}
+		}
+
+	for (int i = 0; i < 4; i++)
+	{
+		graph[position].name[i] = result[i];
+	}
+	changeColorDinh(position, 2);
+	drawTutorial();
+	drawMatrixTT();
+}
+void deleteDinh(Dinh &one, Dinh &two)
+{
+	one.x=two.x;
+	one.y=two.y;
+	strcpy(one.name,two.name);
+}
+void deleteLastDinh()
+{
+	graph[nDinh-1].x=NULL;
+	graph[nDinh-1].y=NULL;
+	graph[nDinh-1].name=NULL;
+}
+void coutMt(){
+	cout<<endl;
+	for (int i=0;i<nDinh;i++)
+	{
+		for (int j=0;j<nDinh;j++)
+		{
+			cout<<MatrixWeight[i][j];
+		}
+		cout<<endl;;
+	}
+}
+void removeDinh()
+{
+	int x,y,position;
+	outtextxy(370, 520, "Nhap vao dinh can xoa");
 
 	while (isDinh(x, y) == -1 && x != -1 && y != -1)
 	{
@@ -472,47 +713,129 @@ void createCanh()
 			}
 		}
 	}
-	startPosition = isDinh(x, y);
-	changeColorDinh(isDinh(x, y), 12);
-
-	clearMouseClick();
-	drawTutorial();
-	x = 0;
-	y = 0;
-	outtextxy(370, 520, "Click vao dinh ket thuc");
 	
-	while (isDinh(x, y) == -1 || isStartDinh(x,y,graph[startPosition])==1)
+	position= isDinh(x, y);
+	
+	// Xóa dinh cuoi cùng
+	if (position==nDinh-1)
 	{
-		while (true)
+		deleteLastDinh();
+	}
+	// Xóa dinh bat ky 
+	else
+	{
+		for (int i=position;i<nDinh-1;i++)
 		{
-			delay(1);
-			if (ismouseclick(WM_LBUTTONDOWN))
+			deleteDinh(graph[i],graph[i+1]);
+		}
+	}
+	deleteLastDinh();
+	
+	// Xóa canh cuoi cùng
+	if(position==nDinh-1)
+	{
+		for (int i=0;i<nDinh;i++)
+		{
+			MatrixWeight[i][nDinh-1]=0;
+			MatrixWeight[nDinh-1][i]=0;
+		}
+		
+	}
+	// Xóa canh bat ki
+	else
+	{
+		for (int i = position; i < nDinh - 1; ++i){
+			for (int j = 0; j < nDinh; ++j){
+				MatrixWeight[i][j] = MatrixWeight[i + 1][j];
+			}
+		}
+						
+		for (int i = 0; i < nDinh; ++i){
+			for (int j = position; j < nDinh - 1; ++j){
+				MatrixWeight[i][j] = MatrixWeight[i][j + 1];
+			}
+		}	
+	}
+	nDinh--;
+	renewGraph();	
+}
+bool isWorkingZone(int x, int y)
+{
+	if (x >= (470 + BK) && x <= (1255 - BK) && y >= (30 + BK) && y <= (480 - BK) && x != -1 && y != -1)
+	{
+		return true;
+	}
+	return false;
+}
+void moveDinh()
+{
+	int x,y,position;
+
+	outtextxy(370, 520, "Chon dinh va keo toi vi tri can toi !");
+	while (true)
+	{
+		drawTutorial();
+		outtextxy(370, 520, "Chon dinh va keo toi vi tri can toi !");
+		x=0;
+		y=0;
+		delay(1);
+		if(ismouseclick(WM_LBUTTONDOWN)){
+				while (isDinh(x, y) == -1 && x != -1 && y != -1)
+		{
+			while (true)
 			{
-				getmouseclick(WM_LBUTTONDOWN, x, y);
+				delay(1);
+				if (ismouseclick(WM_LBUTTONDOWN))
+				{
+					getmouseclick(WM_LBUTTONDOWN, x, y);
+					break;
+				}
+			}
+		}
+		position=isDinh(x,y);
+		clearMouseClick();
+		while(true)
+		{
+			delay(.001);
+			if(ismouseclick(WM_LBUTTONUP))
+			{
+				getmouseclick(WM_LBUTTONUP,x,y);
+			}
+			if (isWorkingZone(x,y) && isDinh(x, y) == -1){
+				graph[position].x=x;
+				graph[position].y=y;
 				break;
 			}
 		}
-	}
-	endPosition = isDinh(x, y);
-	changeColorDinh(isDinh(x, y), 12);
-	MatrixWeight[startPosition][endPosition]=0;
-	Dinh dinhtrongso = drawArrow(startPosition, endPosition, 15);
-
-	changeColorDinh(startPosition, 2);
-	changeColorDinh(endPosition, 2);
-
-	int trongSo = createTrongSo();
-	if (trongSo == 0)
-	{
-		MatrixWeight[startPosition][endPosition] = 0;
-		drawArrow(startPosition, endPosition, CORNER_COLOR_BUTTON);
-	}
-	else
-		MatrixWeight[startPosition][endPosition] = trongSo;
+		clearMouseClick();
+		renewGraph();
+		}
+		else if(ismouseclick(WM_RBUTTONDOWN)){
+				clearMouseClick();
+				renewGraph();
+			break;
+		}
 	
-	drawTrongSo(dinhtrongso, trongSo);
-	drawMatrixTT();
-	//renewGraph();
+	}
+
+			
+//		position=isDinh(x,y);
+//		drawTutorial();
+//		outtextxy(370, 520, "Chon vao noi di chuyen toi!");
+//		while(true)
+//		{
+//			delay(.001);
+//			if(ismouseclick(WM_LBUTTONDOWN))
+//			{
+//				getmouseclick(WM_LBUTTONDOWN,x,y);
+//			}
+//			if (x >= (470 + BK) && x <= (1255 - BK) && y >= (30 + BK) && y <= (480 - BK) && x != -1 && y != -1 && isDinh(x, y) == -1){
+//				graph[position].x=x;
+//				graph[position].y=y;
+//				break;
+//			}
+//		}
+//		renewGraph();
 }
 void processFunction(int type)
 {
@@ -549,13 +872,60 @@ void processFunction(int type)
 		//TPLT
 		break;
 	case 11:
-		//OPEN FILE
+		if (nDinh!=0)
+		{
+			char a;
+			drawTutorial();
+			outtextxy(370, 520, "Ban co muon xoa do thi hien tai? (Y/N)");
+			a= getch();
+			if (a ==89 || a==121)
+			{
+				ClearDoThi();
+				openFile();
+			}
+			else 
+			{
+				drawTutorial();
+				break;
+			}
+		}
+		else
+		{
+			openFile();
+		} 
 		break;
 	case 12:
-		//SAVE FILE
+		drawTutorial();
+		if(nDinh!=0)
+		{
+			saveFile();	
+		}
+		else
+		{
+			outtextxy(370, 520, "Khong co gi de luu !");
+		}
 		break;
 	case 13:
-		//CLEAR GRAPH
+		drawTutorial();
+		if (nDinh!=0)
+		{
+			char a;
+			outtextxy(370, 520, "Ban co muon xoa do thi hien tai? (Y/N)");
+			a= getch();
+			if (a ==89 || a==121)
+			{
+				ClearDoThi();
+			}
+			else 
+			{
+				drawTutorial();
+				break;
+			}
+		}
+		else
+		{
+			outtextxy(370, 520, "Khong co gi de xoa !");
+		} 
 		break;
 	case 14:
 		if (nDinh < MAX)
@@ -573,6 +943,17 @@ void processFunction(int type)
 		break;
 	case 15:
 		//XOA DINH
+		drawTutorial();
+		if(nDinh>0)
+		{
+			removeDinh();
+		}
+		else 
+		{
+			drawTutorial();
+			outtextxy(370, 520, "KHONG DU DINH ");
+			break;
+		}
 		break;
 	case 16:
 		//TAO CUNG
@@ -590,11 +971,32 @@ void processFunction(int type)
 		}
 		break;
 	case 17:
-
 		//DICH DINH
+	
+		if (nDinh >0)
+		{
+			drawTutorial();
+			clearMouseClick();
+			moveDinh();
+		}
+		else
+		{
+			drawTutorial();
+			outtextxy(370, 520, "Khong du dinh");
+			break;
+		}
 		break;
 	case 18:
-		//DOI TEN
+		drawTutorial();
+		if (nDinh>0)
+		{
+			changeNameDinh();
+		}
+		else
+		{
+			outtextxy(370, 520, "Khong du dinh");
+			break;	
+		}
 		break;
 	}
 }
@@ -669,6 +1071,7 @@ void initMatrixWeight()
 }
 void renewGraph()
 {
+	clearMouseClick();
 	drawGraph();
 	drawDinh();
 	drawAllCanh();

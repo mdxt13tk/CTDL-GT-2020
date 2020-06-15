@@ -18,3 +18,4 @@ struct Dinh
 int nDinh = 0;
 Dinh graph[MAX];
 int MatrixWeight[MAX][MAX];
+string fileName="";
