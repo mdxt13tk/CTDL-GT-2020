@@ -19,5 +19,6 @@ int nDinh = 0;
 Dinh graph[MAX];
 //int nPointDDA = 0;
 //Dinh pointDDA[1000];
+int trace[MAX];
 int MatrixWeight[MAX][MAX];
 string fileName="";

@@ -686,14 +686,12 @@ void deleteLastDinh()
 	graph[nDinh-1].name=NULL;
 }
 void coutMt(){
-	cout<<endl;
 	for (int i=0;i<nDinh;i++)
 	{
 		for (int j=0;j<nDinh;j++)
 		{
 			cout<<MatrixWeight[i][j];
 		}
-		cout<<endl;;
 	}
 }
 void removeDinh()
@@ -716,12 +714,12 @@ void removeDinh()
 	
 	position= isDinh(x, y);
 	
-	// Xóa dinh cuoi cùng
+	// Xï¿½a dinh cuoi cï¿½ng
 	if (position==nDinh-1)
 	{
 		deleteLastDinh();
 	}
-	// Xóa dinh bat ky 
+	// Xï¿½a dinh bat ky 
 	else
 	{
 		for (int i=position;i<nDinh-1;i++)
@@ -731,7 +729,7 @@ void removeDinh()
 	}
 	deleteLastDinh();
 	
-	// Xóa canh cuoi cùng
+	// Xï¿½a canh cuoi cï¿½ng
 	if(position==nDinh-1)
 	{
 		for (int i=0;i<nDinh;i++)
@@ -741,7 +739,7 @@ void removeDinh()
 		}
 		
 	}
-	// Xóa canh bat ki
+	// Xï¿½a canh bat ki
 	else
 	{
 		for (int i = position; i < nDinh - 1; ++i){
@@ -821,7 +819,7 @@ void moveDinh()
 			
 //		position=isDinh(x,y);
 //		drawTutorial();
-//		outtextxy(370, 520, "Chon vao noi di chuyen toi!");
+//		outtextxy(370, 520, "Chon vao noi di chuyen toi!")
 //		while(true)
 //		{
 //			delay(.001);
@@ -837,12 +835,119 @@ void moveDinh()
 //		}
 //		renewGraph();
 }
+void initTrace()
+{
+	for (int i=0;i<nDinh;i++)
+	{
+			trace[i]=0;
+	}
+}
+void setTextPrintStyle()
+{
+	settextstyle(8, 0, 1);
+	setcolor(0);
+	setbkcolor(BG_COLOR_MENU);
+}
+void processDFS(int position)
+{
+	initTrace();
+	int stack[MAX];
+	int sp=1;
+	stack[sp]=position;
+	trace[position]=1;
+	int temp = position;
+	int result[MAX];
+	int x = 420;
+	int j = 0;
+	while (sp>0)
+	{	
+		position=stack[sp];
+		result[j]=position;
+		j++;
+		sp--;
+		changeColorDinh(position,12);
+		setTextPrintStyle();
+		outtextxy(370, 550, "DFS:");
+		outtextxy(x, 550,graph[position].name);
+		x+=35;
+		outtextxy(x, 550,"->");
+		x+=30;
+	
+		for (int i=0;i<nDinh;i++)
+		{
+			if ((MatrixWeight[position][i]!=0) && (trace[i]==0))
+			{
+				stack[++sp]=i;
+				trace[i]=1;
+				drawArrow(position,i,4);
+				changeColorDinh(position,12);
+				delay(500);
+			}
+		}
+		changeColorDinh(position,6);
+	}
+	drawTutorial();
+	outtextxy(370, 520, "Chon dinh bat dau: ");
+	outtextxy(575, 520, graph[temp].name);
+	x=420;
+	for(int k =0 ; k<j; k++){
+		setTextPrintStyle();
+		outtextxy(370, 550, "DFS:");
+		outtextxy(x, 550,graph[result[k]].name);
+		x+=35;
+		if(k!=j-1){
+			outtextxy(x, 550,"->");
+			x+=30;
+		};
+		
+	}
+}
+void DFS()
+{
+	// Chon dinh
+	drawTutorial();
+	outtextxy(370, 520, "Chon dinh bat dau: ");
+	int x,y,position;
+	
+	while (isDinh(x, y) == -1 && x != -1 && y != -1)
+	{
+		while (true)
+		{
+			delay(1);
+			if (ismouseclick(WM_LBUTTONDOWN))
+			{
+				getmouseclick(WM_LBUTTONDOWN, x, y);
+				break;
+			}
+		}
+	}
+	position = isDinh(x,y);
+	outtextxy(575, 520, graph[position].name);
+	//DFS
+	int result[MAX];
+	int sl=0;
+	int xx=370;
+	processDFS(position);
+	outtextxy(370,580,"Nhap 1 phim bat ki de tiep tuc ...");
+	getch();
+	renewGraph();
+}
 void processFunction(int type)
 {
 	switch (type)
 	{
 	case 1:
 		//DFS
+		drawTutorial();
+		if(nDinh!=0)
+		{
+			DFS();	
+		}
+		else
+		{
+			outtextxy(370, 520, "Khong du dinh!");
+		}
+		break;
 		break;
 	case 2:
 		//BFS
@@ -1005,6 +1110,7 @@ bool chooseFunction(Dinh s)
 	int x, y;
 
 	getmouseclick(WM_RBUTTONDOWN, x, y);
+
 	if ((x != -1 && y != -1) && (x >= s.x && x <= s.x + 101) && (y >= s.y && y <= s.y + 41))
 	{
 		return true;
@@ -1037,7 +1143,12 @@ void processMouse(Dinh s[][10])
 	{
 		delay(1);
 		getmouseclick(WM_MOUSEMOVE, x, y);
-
+		if(ismouseclick(WM_LBUTTONDOWN)){
+			getmouseclick(WM_LBUTTONDOWN, x, y);
+			cout<<x<<y<<endl;
+			clearmouseclick(WM_LBUTTONDOWN);	
+		}
+	
 		addMouse(s[0][0], x, y, isSelected, 1);
 		addMouse(s[0][1], x, y, isSelected, 2);
 		addMouse(s[0][2], x, y, isSelected, 3);
