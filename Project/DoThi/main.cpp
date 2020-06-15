@@ -8,10 +8,12 @@
 
 using namespace std;
 
+void renewGraph();
 void defaultButton(Dinh a)
 {
 	int c = getcolor();
 	setcolor(CORNER_COLOR_BUTTON);
+	setlinestyle(0, 0, 1);
 	setfillstyle(1, BG_COLOR_MENU);
 	bar(a.x, a.y, a.x + 101, a.y + 41);
 	rectangle(a.x, a.y, a.x + 101, a.y + 41);
@@ -123,6 +125,7 @@ void matrixTTTitle()
 {
 	const int dai = 330;
 	setfillstyle(1, BG_COLOR_MENU);
+	setlinestyle(0, 0, 1);
 	bar(20, 303, 353, 353);
 	setcolor(CORNER_COLOR_BUTTON_SELECTED);
 	rectangle(20, 303, 353, 353);
@@ -131,14 +134,7 @@ void matrixTTTitle()
 	setcolor(0);
 	outtextxy(130, 310, "MA TRAN TRONG SO");
 }
-string coverIntToString(int number)
-{
-	string result;
-	stringstream ss;
-	ss << number;
-	ss >> result;
-	return result;
-}
+
 int coverStringToInt(string value)
 {
 	int result;
@@ -149,7 +145,7 @@ int coverStringToInt(string value)
 }
 void drawMatrixTT()
 {
-
+	setlinestyle(0, 0, 1);
 	setfillstyle(1, BG_COLOR_MENU);
 	bar(20, 358, 353, 688);
 	setcolor(CORNER_COLOR_BUTTON_SELECTED);
@@ -190,6 +186,7 @@ void drawMatrixTT()
 }
 void drawTutorial()
 {
+	setlinestyle(0, 0, 1);
 	setcolor(CORNER_COLOR_BUTTON_SELECTED);
 	setfillstyle(1, BG_COLOR_MENU);
 	bar(357, 500, 1255, 688);
@@ -246,12 +243,7 @@ void drawDinh()
 	drawMatrixTT();
 }
 
-void renewGraph()
-{
-	drawGraph();
-	drawDinh();
-	//renewCanh();
-}
+
 string removeCharater(string a)
 {
 	string s = "";
@@ -309,15 +301,15 @@ void changeColorDinh(int position, int color)
 	outtextxy(graph[position].x - 15, graph[position].y - 12, graph[position].name);
 }
 
-Dinh drawArrow(Dinh start, Dinh end, int color)
+Dinh drawArrow(int posStart, int posEnd, int color)
 {
 	Dinh dinhtrongso;
 	setcolor(color);
 
-	int x1 = start.x;
-	int x2 = end.x;
-	int y1 = start.y;
-	int y2 = end.y;
+	int x1 = graph[posStart].x;
+	int x2 =  graph[posEnd].x;
+	int y1 =  graph[posStart].y;
+	int y2 =  graph[posEnd].y;
 
 	int xG, yG, xVTPT, yVTPT, xG1, yG1, lenVTPT, lenAG;
 	float k;
@@ -330,23 +322,36 @@ Dinh drawArrow(Dinh start, Dinh end, int color)
 	k = (float)lenAG / lenVTPT;
 	xG1 = Round(xG + k * xVTPT);
 	yG1 = Round(yG + k * yVTPT);
-	if (1)
-	{
-		int px[3] = {x1, xG1, x2};
-		int py[3] = {y1, yG1, y2};
-		drawBezier(px, py, 3, color);
-		dinhtrongso.x = Round((xG1 + xG) / 2.0f);
-		dinhtrongso.y = Round((yG1 + yG) / 2.0f);
-	}
-	else
+	
+	if (MatrixWeight[posEnd][posStart]==0 ||posStart<posEnd )
 	{
 		int px[2] = {x1, x2};
 		int py[2] = {y1, y2};
-		drawBezier(px, py, 2, color);
 		dinhtrongso.x = Round((x1 + x2) / 2.0f);
 		dinhtrongso.y = Round((y1 + y2) / 2.0f);
+		
+		drawBezier(px, py, 2, color,dinhtrongso,MatrixWeight[posStart][posEnd]);
 	}
+	else
+	{
+		int px[3] = {x1, xG1, x2};
+		int py[3] = {y1, yG1, y2};
+		dinhtrongso.x = Round((xG1 + xG) / 2.0f);
+		dinhtrongso.y = Round((yG1 + yG) / 2.0f);
+		
+		drawBezier(px, py, 3, color,dinhtrongso,MatrixWeight[posStart][posEnd]);
+	
+	}
+	changeColorDinh(posStart, 2);
+	changeColorDinh(posEnd, 2);
 	return dinhtrongso;
+}
+void drawAllCanh()
+{
+	for (int i = 0; i < nDinh; ++i)
+		for (int j = 0; j < nDinh; ++j)
+			if (MatrixWeight[i][j] != 0)
+				drawArrow(i, j, 15);
 }
 
 int createTrongSo()
@@ -387,13 +392,6 @@ int createTrongSo()
 	} while (c != 13 || i == 0);
 	kq = coverStringToInt(s);
 	return kq;
-}
-
-void drawTrongSo(Dinh dinhtrongso, int trongSo)
-{
-	int x, y;
-	setbkcolor(8);
-	outtextxy(dinhtrongso.x, dinhtrongso.y, &coverIntToString(trongSo)[0]);
 }
 
 void createDinh()
@@ -482,8 +480,8 @@ void createCanh()
 	x = 0;
 	y = 0;
 	outtextxy(370, 520, "Click vao dinh ket thuc");
-
-	while (isDinh(x, y) == -1 && x != -1 && y != -1)
+	
+	while (isDinh(x, y) == -1 || isStartDinh(x,y,graph[startPosition])==1)
 	{
 		while (true)
 		{
@@ -497,8 +495,8 @@ void createCanh()
 	}
 	endPosition = isDinh(x, y);
 	changeColorDinh(isDinh(x, y), 12);
-
-	Dinh dinhtrongso = drawArrow(graph[startPosition], graph[endPosition], 15);
+	MatrixWeight[startPosition][endPosition]=0;
+	Dinh dinhtrongso = drawArrow(startPosition, endPosition, 15);
 
 	changeColorDinh(startPosition, 2);
 	changeColorDinh(endPosition, 2);
@@ -507,11 +505,14 @@ void createCanh()
 	if (trongSo == 0)
 	{
 		MatrixWeight[startPosition][endPosition] = 0;
+		drawArrow(startPosition, endPosition, CORNER_COLOR_BUTTON);
 	}
 	else
 		MatrixWeight[startPosition][endPosition] = trongSo;
+	
 	drawTrongSo(dinhtrongso, trongSo);
 	drawMatrixTT();
+	//renewGraph();
 }
 void processFunction(int type)
 {
@@ -666,7 +667,12 @@ void initMatrixWeight()
 		}
 	}
 }
-
+void renewGraph()
+{
+	drawGraph();
+	drawDinh();
+	drawAllCanh();
+}
 int main(int argc, char *argv[])
 {
 	Dinh a[3][10];

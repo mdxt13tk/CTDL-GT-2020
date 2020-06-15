@@ -14,6 +14,7 @@ int distanceTwoPoint(int, int, int, int);
 int isDinh(int, int);
 void drawBezier(int, int, int, int);
 void drawTriangle(int, int, int, int, int);
+void drawTrongSo(Dinh dinhtrongso, int trongSo);
 
 int calFactorial(int n)
 {
@@ -30,7 +31,7 @@ float calCombonation(int k, int n)
 	return (float)calFactorial(n) / (calFactorial(n - k) * calFactorial(k));
 }
 
-void drawBezier(int px[], int py[], int n, int color)
+void drawBezier(int px[], int py[], int n, int color,Dinh dinhTrongSo,int trongSo)
 {
 	float t, x, y;
 	int i, xTemp=0, yTemp=0;
@@ -56,6 +57,7 @@ void drawBezier(int px[], int py[], int n, int color)
 			flag = true;
 		}
 	}
+	drawTrongSo(dinhTrongSo,trongSo);
 	drawTriangle(xTemp, yTemp, px[n], py[n], color);
 }
 
@@ -98,4 +100,26 @@ int isDinh(int x, int y)
 		}
 	}
 	return -1;
+}
+bool isStartDinh(int x, int y, Dinh a)
+{
+	if (distanceTwoPoint(x,y,a.x,a.y) <= BK)
+	{
+		return true;
+	}
+	return false;
+}
+string coverIntToString(int number)
+{
+	string result;
+	stringstream ss;
+	ss << number;
+	ss >> result;
+	return result;
+}
+void drawTrongSo(Dinh dinhtrongso, int trongSo)
+{
+	int x, y;
+	setbkcolor(8);
+	outtextxy(dinhtrongso.x, dinhtrongso.y, &coverIntToString(trongSo)[0]);
 }
