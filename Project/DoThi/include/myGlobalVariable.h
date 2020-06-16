@@ -8,6 +8,12 @@ const int BG_COLOR_DINH = 2;
 const int CORNER_COLOR_BUTTON = 8;
 const int CORNER_COLOR_BUTTON_SELECTED = 4;
 
+//Working zone.
+int wLeft = 470;
+int wTop = 30;
+int wRight = 1255;
+int wBottom = 480;
+
 struct Dinh
 {
 	int x;
@@ -18,4 +24,4 @@ struct Dinh
 int nDinh = 0;
 Dinh graph[MAX];
 int MatrixWeight[MAX][MAX];
-string fileName="";
+string fileName = "";
