@@ -911,7 +911,7 @@ void processDFS(int position)
 		x += 35;
 		outtextxy(x, 550, "->");
 		x += 30;
-
+		delay(500);
 		for (int i = 0; i < nVertex; i++)
 		{
 			if ((MatrixWeight[position][i] != 0) && (trace[i] == 0))
@@ -964,14 +964,95 @@ void DFS()
 	position = isVertex(x, y);
 	outtextxy(575, 520, graph[position].name);
 	//DFS
-	int result[MAX];
-	int sl = 0;
-	int xx = 370;
 	processDFS(position);
 	outtextxy(370, 580, "Nhap 1 phim bat ki de tiep tuc ...");
 	getch();
 	renewGraph();
 }
+void processBFS (int position)
+{
+	initTrace();
+	int x= 420;
+	int queue[MAX*MAX];
+	int tail =1;
+	int head =1;
+	queue[head]=position;
+	trace[position]=1;
+	int j =0;
+	int result[MAX];
+	int temp = position;
+	while (head<=tail)
+	{
+		position=queue[head];
+		result[j]=position;
+		j++;
+		head ++;
+		changeColorVertex(position, 12);
+		setTextPrintStyle();
+		outtextxy(370, 550, "BFS:");
+		outtextxy(x, 550, graph[position].name);
+		x += 35;
+		outtextxy(x, 550, "->");
+		x += 30;
+		delay(500);
+		for (int i=0;i<nVertex;i++)
+		{
+			if (MatrixWeight[position][i]!=0 && trace[i]==0)
+			{	
+				tail++;
+				queue[tail]=i;
+				drawEdge(position, i, 4);
+				trace[i]=1;
+				delay(500);
+			}
+		}
+		changeColorVertex(position, 6);
+	}
+	drawTutorial();
+	outtextxy(370, 520, "Chon dinh bat dau: ");
+	outtextxy(575, 520, graph[temp].name);
+	x = 420;
+	for (int k = 0; k < j; k++)
+	{
+		setTextPrintStyle();
+		outtextxy(370, 550, "BFS:");
+		outtextxy(x, 550, graph[result[k]].name);
+		x += 35;
+		if (k != j - 1)
+		{
+			outtextxy(x, 550, "->");
+			x += 30;
+		};
+	}
+}
+void BFS()
+{
+	// Chon dinh
+	drawTutorial();
+	outtextxy(370, 520, "Chon dinh bat dau: ");
+	int x, y, position;
+
+	while (isVertex(x, y) == -1 && x != -1 && y != -1)
+	{
+		while (true)
+		{
+			delay(1);
+			if (ismouseclick(WM_LBUTTONDOWN))
+			{
+				getmouseclick(WM_LBUTTONDOWN, x, y);
+				break;
+			}
+		}
+	}
+	position = isVertex(x, y);
+	outtextxy(575, 520, graph[position].name);
+	//BFS
+	processBFS(position);
+	outtextxy(370, 580, "Nhap 1 phim bat ki de tiep tuc ...");
+	getch();
+	renewGraph();
+}
+
 void processFunction(int type)
 {
 	switch (type)
@@ -988,9 +1069,17 @@ void processFunction(int type)
 			outtextxy(370, 520, "Khong du dinh!");
 		}
 		break;
-		break;
 	case 2:
 		//BFS
+		drawTutorial();
+		if (nVertex != 0)
+		{
+			BFS();
+		}
+		else
+		{
+			outtextxy(370, 520, "Khong du dinh!");
+		}
 		break;
 	case 3:
 		//X->Y
