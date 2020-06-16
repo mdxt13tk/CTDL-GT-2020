@@ -51,7 +51,6 @@ void drawBezier(int px[], int py[], int n, int color,Dinh dinhTrongSo,int trongS
 		putpixel(x, y, color);
 		if (distanceTwoPoint(x, y, px[n], py[n]) <= BK && flag == false)
 		{
-			cout << x << " " << y;
 			xTemp = x;
 			yTemp = y;
 			flag = true;
