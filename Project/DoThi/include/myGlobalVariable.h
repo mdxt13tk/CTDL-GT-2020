@@ -9,10 +9,10 @@ const int CORNER_COLOR_BUTTON = 8;
 const int CORNER_COLOR_BUTTON_SELECTED = 4;
 
 //Working zone.
-int wLeft = 470;
-int wTop = 30;
-int wRight = 1255;
-int wBottom = 480;
+int wzLEFT = 470;
+int wzTOP = 30;
+int wzRIGHT = 1255;
+int wzBOTTOM = 480;
 
 struct Dinh
 {

@@ -208,7 +208,7 @@ void drawGraph()
 	setfillstyle(1, 8);
 	bar(470, 30, 1255, 480);
 	setcolor(CORNER_COLOR_BUTTON_SELECTED);
-	rectangle(470, 30, 1255, 480);
+	rectangle(wzLEFT, wzTOP, wzRIGHT, wzBOTTOM);
 	drawTutorial();
 }
 
@@ -336,7 +336,7 @@ Dinh drawArrow(int posStart, int posEnd, int color)
 	{
 		int xtrongso = Round((xG1 + xG) / 2.0f);
 		int ytrongso = Round((yG1 + yG) / 2.0f);
-		if (xtrongso <= wLeft || xtrongso >= wRight || ytrongso <= wTop || ytrongso >= wBottom)
+		if (xtrongso <= wzLEFT || xtrongso >= wzRIGHT || ytrongso <= wzTOP || ytrongso >= wzBOTTOM)
 		{
 			xG1 = Round(xG - k * xVTPT);
 			yG1 = Round(yG - k * yVTPT);
