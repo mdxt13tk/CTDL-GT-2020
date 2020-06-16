@@ -35,6 +35,7 @@ void drawBezierLine(int px[], int py[], int n, int color)
 	float t, x, y;
 	int i, xTriangle = 0, yTriangle = 0;
 	n = n - 1;
+	bool flag = false;
 	for (t = 0; t <= 1; t = t + 0.001f)
 	{
 		x = 0;
@@ -46,14 +47,14 @@ void drawBezierLine(int px[], int py[], int n, int color)
 		}
 		x = Round(x);
 		y = Round(y);
-		if (distanceTwoPoint(x, y, px[n], py[n]) > BK && distanceTwoPoint(x, y, px[0], py[0]) >= BK)
-		{
+
+		if (distanceTwoPoint(x, y, px[0], py[0]) >= BK && distanceTwoPoint(x, y, px[n], py[n]) > BK)
 			putpixel(x, y, color);
-		}
-		else if (distanceTwoPoint(x, y, px[n], py[n]) == BK)
+		if (distanceTwoPoint(x, y, px[n], py[n]) <= BK && flag == false)
 		{
 			xTriangle = x;
 			yTriangle = y;
+			flag = true;
 		}
 	}
 	drawTriangle(xTriangle, yTriangle, px[n], py[n], color);
