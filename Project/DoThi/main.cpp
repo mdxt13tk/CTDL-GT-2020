@@ -320,7 +320,7 @@ Dinh drawArrow(int posStart, int posEnd, int color)
 	yVTPT = x2 - x1;
 	lenVTPT = Round(sqrt(pow(xVTPT, 2) + pow(yVTPT, 2)));
 	lenAG = distanceTwoPoint(x1, y1, xG, yG);
-	k = (float)lenAG / lenVTPT;
+	k = (float)lenAG / 2*lenVTPT;
 	xG1 = Round(xG + k * xVTPT);
 	yG1 = Round(yG + k * yVTPT);
 
