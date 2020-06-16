@@ -729,7 +729,7 @@ void removeDinh()
 	}
 	deleteLastDinh();
 	
-	// X�a canh cuoi c�ng
+	// X�a canh cuoi c�ngg
 	if(position==nDinh-1)
 	{
 		for (int i=0;i<nDinh;i++)
@@ -886,7 +886,7 @@ void processDFS(int position)
 		}
 		changeColorDinh(position,6);
 	}
-	drawTutorial();
+		drawTutorial();
 	outtextxy(370, 520, "Chon dinh bat dau: ");
 	outtextxy(575, 520, graph[temp].name);
 	x=420;
