@@ -11,10 +11,9 @@ using namespace std;
 int calFactorial(int);
 float calCombonation(int, int);
 int distanceTwoPoint(int, int, int, int);
-int isDinh(int, int);
-void drawBezier(int, int, int, int);
+int isVertex(int, int);
+void drawBezierLine(int, int, int, int);
 void drawTriangle(int, int, int, int, int);
-void drawTrongSo(Dinh dinhtrongso, int trongSo);
 
 int calFactorial(int n)
 {
@@ -31,13 +30,12 @@ float calCombonation(int k, int n)
 	return (float)calFactorial(n) / (calFactorial(n - k) * calFactorial(k));
 }
 
-void drawBezier(int px[], int py[], int n, int color,Dinh dinhTrongSo,int trongSo)
+void drawBezierLine(int px[], int py[], int n, int color)
 {
 	float t, x, y;
-	int i, xTemp=0, yTemp=0;
-	bool flag = false;
+	int i, xTriangle = 0, yTriangle = 0;
 	n = n - 1;
-	for (t = 0; t <= 1; t = t + 0.0001f)
+	for (t = 0; t <= 1; t = t + 0.001f)
 	{
 		x = 0;
 		y = 0;
@@ -48,16 +46,17 @@ void drawBezier(int px[], int py[], int n, int color,Dinh dinhTrongSo,int trongS
 		}
 		x = Round(x);
 		y = Round(y);
-		putpixel(x, y, color);
-		if (distanceTwoPoint(x, y, px[n], py[n]) <= BK && flag == false)
+		if (distanceTwoPoint(x, y, px[n], py[n]) > BK && distanceTwoPoint(x, y, px[0], py[0]) >= BK)
 		{
-			xTemp = x;
-			yTemp = y;
-			flag = true;
+			putpixel(x, y, color);
+		}
+		else if (distanceTwoPoint(x, y, px[n], py[n]) == BK)
+		{
+			xTriangle = x;
+			yTriangle = y;
 		}
 	}
-	drawTrongSo(dinhTrongSo,trongSo);
-	drawTriangle(xTemp, yTemp, px[n], py[n], color);
+	drawTriangle(xTriangle, yTriangle, px[n], py[n], color);
 }
 
 void drawTriangle(int x, int y, int xDinh, int yDinh, int color)
@@ -89,9 +88,9 @@ int distanceTwoPoint(int x1, int y1, int x2, int y2)
 	return Round(sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2)));
 }
 
-int isDinh(int x, int y)
+int isVertex(int x, int y)
 {
-	for (int i = 0; i < nDinh; i++)
+	for (int i = 0; i < nVertex; i++)
 	{
 		if (distanceTwoPoint(x, y, graph[i].x, graph[i].y) <= BK)
 		{
@@ -100,9 +99,9 @@ int isDinh(int x, int y)
 	}
 	return -1;
 }
-bool isStartDinh(int x, int y, Dinh a)
+bool isStartVertex(int x, int y, Vertex a)
 {
-	if (distanceTwoPoint(x,y,a.x,a.y) <= BK)
+	if (distanceTwoPoint(x, y, a.x, a.y) <= BK)
 	{
 		return true;
 	}
@@ -115,13 +114,4 @@ string coverIntToString(int number)
 	ss << number;
 	ss >> result;
 	return result;
-}
-void drawTrongSo(Dinh dinhtrongso, int trongSo)
-{
-	int x, y;
-	setbkcolor(8);
-	int currentColor = getcolor();
-	setcolor(15);
-	outtextxy(dinhtrongso.x, dinhtrongso.y, &coverIntToString(trongSo)[0]);
-	setcolor(currentColor);
 }

@@ -4,7 +4,9 @@
 #define Round(a) (int)(a + 0.5)
 
 const int BG_COLOR_MENU = 7;
-const int BG_COLOR_DINH = 2;
+const int BG_COLOR_VERTEX = 2;
+const int BG_COLOR_GRAPH = 8;
+const int COLOR_TEXT = 0;
 const int CORNER_COLOR_BUTTON = 8;
 const int CORNER_COLOR_BUTTON_SELECTED = 4;
 
@@ -14,15 +16,15 @@ int wzTOP = 30;
 int wzRIGHT = 1255;
 int wzBOTTOM = 480;
 
-struct Dinh
+struct Vertex
 {
 	int x;
 	int y;
 	char *name;
 };
 
-int nDinh = 0;
-Dinh graph[MAX];
+int nVertex = 0;
+Vertex graph[MAX];
 //int nPointDDA = 0;
 //Dinh pointDDA[1000];
 int trace[MAX];

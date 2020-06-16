@@ -9,9 +9,11 @@
 
 using namespace std;
 
+void drawTrongSo(Vertex dinhtrongso, int trongso);
+
 void renewGraph();
-bool isWorkingZone(int x,int y);
-void defaultButton(Dinh a)
+bool isWorkingZone(int x, int y);
+void defaultButton(Vertex a)
 {
 	int c = getcolor();
 	setcolor(CORNER_COLOR_BUTTON);
@@ -26,7 +28,7 @@ void defaultButton(Dinh a)
 	setcolor(c);
 	setfillstyle(1, c);
 }
-void customButton(Dinh a)
+void customButton(Vertex a)
 {
 	int c = getcolor();
 	setcolor(15);
@@ -40,7 +42,7 @@ void customButton(Dinh a)
 	setcolor(c);
 	setfillstyle(1, c);
 }
-void systemMenu(Dinh systemMenu[3])
+void systemMenu(Vertex systemMenu[3])
 {
 	const int we = 111;
 	const int hi = 51;
@@ -64,7 +66,7 @@ void systemMenu(Dinh systemMenu[3])
 	setcolor(CORNER_COLOR_BUTTON_SELECTED);
 	rectangle(20, 245, 353, 298);
 }
-void funcMenu(Dinh menu[10])
+void funcMenu(Vertex menu[10])
 {
 	const int we = 111;
 	const int hi = 51;
@@ -99,7 +101,7 @@ void funcMenu(Dinh menu[10])
 	setcolor(CORNER_COLOR_BUTTON_SELECTED);
 	rectangle(20, 30, 353, 238);
 }
-void controlMenu(Dinh file[5])
+void controlMenu(Vertex file[5])
 {
 	const int we = 111;
 	const int hi = 81;
@@ -159,14 +161,14 @@ void drawMatrixTT()
 	int yy = 365;
 	int xNew = 33;
 	string temp;
-	if (nDinh <= 10 && nDinh != 0)
+	if (nVertex <= 10 && nVertex != 0)
 	{
-		for (int i = 0; i <= nDinh; i++)
+		for (int i = 0; i <= nVertex; i++)
 		{
-			for (int j = 0; j < nDinh; j++)
+			for (int j = 0; j < nVertex; j++)
 			{
 				setfillstyle(1, 0);
-				line(xNew + j * D + 28, 25 + dai, xNew + j * D + 28, 23 + dai + (nDinh + 1) * D);
+				line(xNew + j * D + 28, 25 + dai, xNew + j * D + 28, 23 + dai + (nVertex + 1) * D);
 				if (i == 0)
 				{
 					setbkcolor(BG_COLOR_MENU);
@@ -181,8 +183,8 @@ void drawMatrixTT()
 				}
 			}
 			setfillstyle(1, 0);
-			line(xNew + nDinh * D + 31, 25 + dai, xNew + nDinh * D + 31, 23 + dai + (nDinh + 1) * D);
-			line(20, 355 + 30 + i * 30, 35 + (nDinh + 1) * 30, 355 + 30 + i * 30);
+			line(xNew + nVertex * D + 31, 25 + dai, xNew + nVertex * D + 31, 23 + dai + (nVertex + 1) * D);
+			line(20, 355 + 30 + i * 30, 35 + (nVertex + 1) * 30, 355 + 30 + i * 30);
 		}
 	}
 }
@@ -203,12 +205,12 @@ void drawTutorial()
 	outtextxy(370, 493, "HUONG DAN");
 	settextstyle(8, 0, 1);
 }
-void drawGraph()
+void drawWorkingZone()
 {
 	setfillstyle(1, 8);
 	bar(470, 30, 1255, 480);
 	setcolor(CORNER_COLOR_BUTTON_SELECTED);
-	rectangle(470, 30, 1255, 480);
+	rectangle(wzLEFT, wzTOP, wzRIGHT, wzBOTTOM);
 	drawTutorial();
 }
 
@@ -219,7 +221,7 @@ void clearMouseClick()
 	clearmouseclick(WM_LBUTTONUP);
 	clearmouseclick(WM_LBUTTONDOWN);
 }
-void drawUI(Dinh a[][10])
+void drawUI(Vertex a[][10])
 {
 	setfillstyle(1, 7);
 	bar(1, 1, 1279, 719);
@@ -228,23 +230,22 @@ void drawUI(Dinh a[][10])
 	controlMenu(a[2]);
 	matrixTTTitle();
 	drawMatrixTT();
-	drawGraph();
+	drawWorkingZone();
 }
 
-void drawDinh()
+void drawAllVertex()
 {
-	for (int i = 0; i < nDinh; i++)
+	for (int i = 0; i < nVertex; i++)
 	{
-		setfillstyle(1, BG_COLOR_DINH);
-		setcolor(BG_COLOR_DINH);
+		setfillstyle(1, BG_COLOR_VERTEX);
+		setcolor(BG_COLOR_VERTEX);
 		pieslice(graph[i].x, graph[i].y, 0, 0, BK);
 		setcolor(15);
-		setbkcolor(BG_COLOR_DINH);
+		setbkcolor(BG_COLOR_VERTEX);
 		outtextxy(graph[i].x - 15, graph[i].y - 12, graph[i].name);
 	}
 	drawMatrixTT();
 }
-
 
 string removeCharater(string a)
 {
@@ -254,7 +255,7 @@ string removeCharater(string a)
 	return s;
 }
 
-char *createNameDinh()
+char *createVertex()
 {
 	drawTutorial();
 	char c;
@@ -293,7 +294,7 @@ char *createNameDinh()
 	return strupr(result);
 }
 
-void changeColorDinh(int position, int color)
+void changeColorVertex(int position, int color)
 {
 	setfillstyle(1, color);
 	setcolor(color);
@@ -303,15 +304,15 @@ void changeColorDinh(int position, int color)
 	outtextxy(graph[position].x - 15, graph[position].y - 12, graph[position].name);
 }
 
-Dinh drawArrow(int posStart, int posEnd, int color)
+Vertex drawEdge(int posStart, int posEnd, int color)
 {
-	Dinh dinhtrongso;
+	Vertex dinhtrongso;
 	setcolor(color);
 
 	int x1 = graph[posStart].x;
-	int x2 =  graph[posEnd].x;
-	int y1 =  graph[posStart].y;
-	int y2 =  graph[posEnd].y;
+	int x2 = graph[posEnd].x;
+	int y1 = graph[posStart].y;
+	int y2 = graph[posEnd].y;
 
 	int xG, yG, xVTPT, yVTPT, xG1, yG1, lenVTPT, lenAG;
 	float k;
@@ -321,18 +322,18 @@ Dinh drawArrow(int posStart, int posEnd, int color)
 	yVTPT = x2 - x1;
 	lenVTPT = Round(sqrt(pow(xVTPT, 2) + pow(yVTPT, 2)));
 	lenAG = distanceTwoPoint(x1, y1, xG, yG);
-	k = (float)lenAG / (1.5*lenVTPT);
+	k = (float)lenAG / (1.5 * lenVTPT);
 	xG1 = Round(xG + k * xVTPT);
 	yG1 = Round(yG + k * yVTPT);
-	
-	if (MatrixWeight[posEnd][posStart]==0 ||posStart<posEnd )
+
+	if (MatrixWeight[posEnd][posStart] == 0 || posStart < posEnd)
 	{
 		int px[2] = {x1, x2};
 		int py[2] = {y1, y2};
 		dinhtrongso.x = Round((x1 + x2) / 2.0f);
 		dinhtrongso.y = Round((y1 + y2) / 2.0f);
-		
-		drawBezier(px, py, 2, color,dinhtrongso,MatrixWeight[posStart][posEnd]);
+
+		drawBezierLine(px, py, 2, color);
 	}
 	else
 	{
@@ -349,19 +350,39 @@ Dinh drawArrow(int posStart, int posEnd, int color)
 		int py[3] = {y1, yG1, y2};
 		dinhtrongso.x = xtrongso;
 		dinhtrongso.y = ytrongso;
-		drawBezier(px, py, 3, color, dinhtrongso, MatrixWeight[posStart][posEnd]);
-	
+		drawBezierLine(px, py, 3, color);
 	}
-	changeColorDinh(posStart, 2);
-	changeColorDinh(posEnd, 2);
 	return dinhtrongso;
 }
-void drawAllCanh()
+
+void drawTrongSo(Vertex dinhtrongso, int trongso)
 {
-	for (int i = 0; i < nDinh; ++i)
-		for (int j = 0; j < nDinh; ++j)
+	int x, y;
+	int currentColor = getcolor();
+	setbkcolor(15);
+	if (trongso == 0)
+	{
+		setbkcolor(BG_COLOR_GRAPH);
+		setcolor(BG_COLOR_GRAPH);
+	}
+	else
+	{
+		setcolor(COLOR_TEXT);
+	}
+	outtextxy(dinhtrongso.x, dinhtrongso.y, &coverIntToString(trongso)[0]);
+	setcolor(currentColor);
+}
+
+void drawAllEdge()
+{
+	Vertex vertexweightnumber;
+	for (int i = 0; i < nVertex; ++i)
+		for (int j = 0; j < nVertex; ++j)
 			if (MatrixWeight[i][j] != 0)
-				drawArrow(i, j, 15);
+			{
+				vertexweightnumber = drawEdge(i, j, 15);
+				drawTrongSo(vertexweightnumber, MatrixWeight[i][j]);
+			}
 }
 
 int createTrongSo()
@@ -404,36 +425,36 @@ int createTrongSo()
 	return kq;
 }
 
-void createDinh()
+void drawVertex()
 {
-	while (nDinh <= MAX - 1)
+	while (nVertex <= MAX - 1)
 	{
 		delay(1);
 		drawTutorial();
 		settextstyle(8, 0, 1);
-		outtextxy(370, 520, "Click chuot de them dinh");
+		outtextxy(370, 520, "Click chuot trai de them dinh");
 		delay(1);
 		int x, y;
 
 		if (ismouseclick(WM_LBUTTONDOWN))
 		{
 			getmouseclick(WM_LBUTTONDOWN, x, y);
-			if (isWorkingZone(x,y) && isDinh(x, y) == -1)
+			if (isWorkingZone(x, y) && isVertex(x, y) == -1)
 			{
-				graph[nDinh].x = x;
-				graph[nDinh].y = y;
+				graph[nVertex].x = x;
+				graph[nVertex].y = y;
 
-				setfillstyle(1, BG_COLOR_DINH);
-				setcolor(BG_COLOR_DINH);
-				pieslice(graph[nDinh].x, graph[nDinh].y, 0, 0, BK);
-				graph[nDinh].name = new char[3];
+				setfillstyle(1, BG_COLOR_VERTEX);
+				setcolor(BG_COLOR_VERTEX);
+				pieslice(graph[nVertex].x, graph[nVertex].y, 0, 0, BK);
+				graph[nVertex].name = new char[3];
 			back:
 				char *result = new char[3];
-				result = createNameDinh();
+				result = createVertex();
 
-				if (nDinh > 0)
+				if (nVertex > 0)
 				{
-					for (int i = 0; i < nDinh; i++)
+					for (int i = 0; i < nVertex; i++)
 					{
 						if (strcmp(result, graph[i].name) == 0)
 						{
@@ -444,13 +465,13 @@ void createDinh()
 
 				for (int i = 0; i < 4; i++)
 				{
-					graph[nDinh].name[i] = result[i];
+					graph[nVertex].name[i] = result[i];
 				}
 
 				setcolor(15);
-				setbkcolor(BG_COLOR_DINH);
-				outtextxy(graph[nDinh].x - 15, graph[nDinh].y - 12, graph[nDinh].name);
-				nDinh++;
+				setbkcolor(BG_COLOR_VERTEX);
+				outtextxy(graph[nVertex].x - 15, graph[nVertex].y - 12, graph[nVertex].name);
+				nVertex++;
 				drawMatrixTT();
 			}
 			clearMouseClick();
@@ -463,83 +484,92 @@ void createDinh()
 		}
 	};
 }
-void createCanh()
+void createEdge()
 {
-	while(1){
-	clearMouseClick();
-	drawTutorial();
-	outtextxy(370, 520, "Click vao dinh bat dau");
-	int x, y;
-	int startPosition, endPosition;
-	delay(1);
-	if (ismouseclick(WM_LBUTTONDOWN))
+	while (1)
 	{
-		getmouseclick(WM_LBUTTONDOWN, x, y);
-		while (isDinh(x, y) == -1 && x != -1 && y != -1)
-		{
-			while (true)
-			{
-				delay(1);
-				if (ismouseclick(WM_LBUTTONDOWN))
-				{
-					getmouseclick(WM_LBUTTONDOWN, x, y);
-					break;
-				}
-			}
-		}
-		startPosition = isDinh(x, y);
-		changeColorDinh(isDinh(x, y), 12);
-	
 		clearMouseClick();
 		drawTutorial();
-		x = 0;
-		y = 0;
-		outtextxy(370, 520, "Click vao dinh ket thuc");
-		
-		while (isDinh(x, y) == -1 || isStartDinh(x,y,graph[startPosition])==1)
+		outtextxy(370, 520, "Click vao dinh bat dau");
+		int x, y;
+		int posStart, posEnd;
+		delay(1);
+		if (ismouseclick(WM_LBUTTONDOWN))
 		{
-			while (true)
+			getmouseclick(WM_LBUTTONDOWN, x, y);
+			while (isVertex(x, y) == -1 && x != -1 && y != -1)
 			{
-				delay(1);
-				if (ismouseclick(WM_LBUTTONDOWN))
+				while (true)
 				{
-					getmouseclick(WM_LBUTTONDOWN, x, y);
-					break;
+					delay(1);
+					if (ismouseclick(WM_LBUTTONDOWN))
+					{
+						getmouseclick(WM_LBUTTONDOWN, x, y);
+						break;
+					}
 				}
 			}
+			posStart = isVertex(x, y);
+			changeColorVertex(isVertex(x, y), 12);
+
+			clearMouseClick();
+			drawTutorial();
+			x = 0;
+			y = 0;
+			outtextxy(370, 520, "Click vao dinh ket thuc");
+
+			while (isVertex(x, y) == -1 || isStartVertex(x, y, graph[posStart]) == 1)
+			{
+				while (true)
+				{
+					delay(1);
+					if (ismouseclick(WM_LBUTTONDOWN))
+					{
+						getmouseclick(WM_LBUTTONDOWN, x, y);
+						break;
+					}
+				}
+			}
+			posEnd = isVertex(x, y);
+			changeColorVertex(isVertex(x, y), 12);
+
+			if (MatrixWeight[posEnd][posStart] != 0)
+			{
+				//do nothing.
+			}
+
+			MatrixWeight[posStart][posEnd] = 0;
+
+			Vertex dinhtrongso = drawEdge(posStart, posEnd, 4);
+
+			int trongso = createTrongSo();
+			if (trongso == 0)
+			{
+				MatrixWeight[posStart][posEnd] = 0;
+				drawEdge(posStart, posEnd, BG_COLOR_GRAPH);
+			}
+			else
+			{
+				MatrixWeight[posStart][posEnd] = trongso;
+				drawEdge(posStart, posEnd, 15);
+			}
+			drawTrongSo(dinhtrongso, trongso);
+			changeColorVertex(posStart, 2);
+			changeColorVertex(posEnd, 2);
+			drawMatrixTT();
 		}
-		endPosition = isDinh(x, y);
-		changeColorDinh(isDinh(x, y), 12);
-		MatrixWeight[startPosition][endPosition]=0;
-		Dinh dinhtrongso = drawArrow(startPosition, endPosition, 15);
-	
-		changeColorDinh(startPosition, 2);
-		changeColorDinh(endPosition, 2);
-	
-		int trongSo = createTrongSo();
-		if (trongSo == 0)
+		else if (ismouseclick(WM_RBUTTONDOWN))
 		{
-			MatrixWeight[startPosition][endPosition] = 0;
-			drawArrow(startPosition, endPosition, CORNER_COLOR_BUTTON);
+			break;
 		}
-		else
-			MatrixWeight[startPosition][endPosition] = trongSo;
-		
-		drawTrongSo(dinhtrongso, trongSo);
-		drawMatrixTT();
-		}
-	else if (ismouseclick(WM_RBUTTONDOWN))
-	{	
-		break;
 	}
-	}	
 }
 string processFileName()
 {
 	drawTutorial();
 	char c;
 	string fileName;
-	char* result = new char[20];
+	char *result = new char[20];
 	string s;
 	outtextxy(370, 520, "Nhap toi da 15 chu va so. Nhan ENTER de ket thuc");
 	outtextxy(370, 540, "Ten file: ");
@@ -548,14 +578,16 @@ string processFileName()
 	do
 	{
 		fflush(stdin);
-		while (!kbhit());
+		while (!kbhit())
+			;
 		c = getch();
-		if (c != 13 && c != 8 && i < 15 && ((c>=65 && c<=90) ||(c>=97 && c<=122) || (c>=48 && c<=57) ))
+		if (c != 13 && c != 8 && i < 15 && ((c >= 65 && c <= 90) || (c >= 97 && c <= 122) || (c >= 48 && c <= 57)))
 		{
 			i++;
 			s += c;
 		}
-		else if (c == 8 && i > 0){
+		else if (c == 8 && i > 0)
+		{
 			i--;
 			s = removeCharater(s);
 		}
@@ -566,33 +598,33 @@ string processFileName()
 	} while (c != 13 || i == 0);
 	return s;
 }
-void saveFile()	
+void saveFile()
 {
 	string fileName = processFileName();
 	ofstream f;
 	fileName += ".txt";
 	f.open(&fileName[0]);
-	
-	f<<nDinh<<endl;
-	for (int i=0;i<nDinh;i++)
+
+	f << nVertex << endl;
+	for (int i = 0; i < nVertex; i++)
 	{
-		for (int j=0;j<nDinh;j++)
+		for (int j = 0; j < nVertex; j++)
 		{
-				f<<MatrixWeight[i][j]<<" ";
+			f << MatrixWeight[i][j] << " ";
 		}
-		f<<endl;
+		f << endl;
 	}
-	for (int i=0;i<nDinh;i++)
+	for (int i = 0; i < nVertex; i++)
 	{
-		f<<graph[i].x<<" "<<graph[i].y<<" "<<graph[i].name<<endl;
+		f << graph[i].x << " " << graph[i].y << " " << graph[i].name << endl;
 	}
 	outtextxy(370, 560, "LUU FILE HOAN TAT !!!");
-	f.close();	
-	outtextxy(370,580,"Nhap 1 phim bat ki de tiep tuc ...");
+	f.close();
+	outtextxy(370, 580, "Nhap 1 phim bat ki de tiep tuc ...");
 	getch();
 	drawTutorial();
 }
-void openFile()	
+void openFile()
 {
 	string fileNames = processFileName();
 	ifstream f;
@@ -603,49 +635,51 @@ void openFile()
 		drawTutorial();
 		outtextxy(370, 520, "File khong ton tai");
 		return;
-	}else{
-		fileName=strupr(&fileNames[0]);
 	}
-	f>>nDinh;
-	for (int i=0;i<nDinh;i++)
+	else
 	{
-		for (int j=0;j<nDinh;j++)
+		fileName = strupr(&fileNames[0]);
+	}
+	f >> nVertex;
+	for (int i = 0; i < nVertex; i++)
+	{
+		for (int j = 0; j < nVertex; j++)
 		{
-			f>>MatrixWeight[i][j];
+			f >> MatrixWeight[i][j];
 		}
 	}
-	for (int i=0;i<nDinh;i++)
+	for (int i = 0; i < nVertex; i++)
 	{
 		graph[i].name = new char[3];
-		f>>graph[i].x;
-		f>>graph[i].y;
-		f>>graph[i].name;
+		f >> graph[i].x;
+		f >> graph[i].y;
+		f >> graph[i].name;
 	}
 	outtextxy(370, 560, "DOC FILE HOAN TAT !!!");
-	f.close();	
+	f.close();
 	renewGraph();
 }
-void clearDoThi()
+void clearGraph()
 {
-	for (int i=0;i<nDinh;i++)
+	for (int i = 0; i < nVertex; i++)
 	{
-		graph[i].x=NULL;
-		graph[i].y=NULL;
-		graph[i].name=NULL;
-		for (int j=0;j<nDinh;j++)
+		graph[i].x = NULL;
+		graph[i].y = NULL;
+		graph[i].name = NULL;
+		for (int j = 0; j < nVertex; j++)
 		{
-			MatrixWeight[i][j]=NULL;
+			MatrixWeight[i][j] = NULL;
 		}
 	}
-	nDinh=0;
-	fileName="";
-	renewGraph();	
+	nVertex = 0;
+	fileName = "";
+	renewGraph();
 }
 void changeNameDinh()
 {
-	int x,y,position;
+	int x, y, position;
 	outtextxy(370, 520, "Nhap vao dinh can doi ten, khong duoc trung voi dinh da ton tai");
-	while (isDinh(x, y) == -1 && x != -1 && y != -1)
+	while (isVertex(x, y) == -1 && x != -1 && y != -1)
 	{
 		while (true)
 		{
@@ -657,57 +691,58 @@ void changeNameDinh()
 			}
 		}
 	}
-	position= isDinh(x, y);
-	back:
-		char *result = new char[3];
-		result = createNameDinh();
+	position = isVertex(x, y);
+back:
+	char *result = new char[3];
+	result = createVertex();
 
-		if (nDinh > 0)
+	if (nVertex > 0)
+	{
+		for (int i = 0; i < nVertex; i++)
 		{
-			for (int i = 0; i < nDinh; i++)
+			if (strcmp(result, graph[i].name) == 0)
 			{
-				if (strcmp(result, graph[i].name) == 0)
-				{
-					goto back;
-				}
+				goto back;
 			}
 		}
+	}
 
 	for (int i = 0; i < 4; i++)
 	{
 		graph[position].name[i] = result[i];
 	}
-	changeColorDinh(position, 2);
+	changeColorVertex(position, 2);
 	drawTutorial();
 	drawMatrixTT();
 }
-void deleteDinh(Dinh &one, Dinh &two)
+void deleteVertex(Vertex &one, Vertex &two)
 {
-	one.x=two.x;
-	one.y=two.y;
-	strcpy(one.name,two.name);
+	one.x = two.x;
+	one.y = two.y;
+	strcpy(one.name, two.name);
 }
-void deleteLastDinh()
+void deleteLastVertex()
 {
-	graph[nDinh-1].x=NULL;
-	graph[nDinh-1].y=NULL;
-	graph[nDinh-1].name=NULL;
+	graph[nVertex - 1].x = NULL;
+	graph[nVertex - 1].y = NULL;
+	graph[nVertex - 1].name = NULL;
 }
-void coutMt(){
-	for (int i=0;i<nDinh;i++)
+void coutMt()
+{
+	for (int i = 0; i < nVertex; i++)
 	{
-		for (int j=0;j<nDinh;j++)
+		for (int j = 0; j < nVertex; j++)
 		{
-			cout<<MatrixWeight[i][j];
+			cout << MatrixWeight[i][j];
 		}
 	}
 }
-void removeDinh()
+void removeVertex()
 {
-	int x,y,position;
+	int x, y, position;
 	outtextxy(370, 520, "Nhap vao dinh can xoa");
 
-	while (isDinh(x, y) == -1 && x != -1 && y != -1)
+	while (isVertex(x, y) == -1 && x != -1 && y != -1)
 	{
 		while (true)
 		{
@@ -719,51 +754,54 @@ void removeDinh()
 			}
 		}
 	}
-	
-	position= isDinh(x, y);
-	
+
+	position = isVertex(x, y);
+
 	// X?a dinh cuoi c?ng
-	if (position==nDinh-1)
+	if (position == nVertex - 1)
 	{
-		deleteLastDinh();
+		deleteLastVertex();
 	}
-	// X?a dinh bat ky 
+	// X?a dinh bat ky
 	else
 	{
-		for (int i=position;i<nDinh-1;i++)
+		for (int i = position; i < nVertex - 1; i++)
 		{
-			deleteDinh(graph[i],graph[i+1]);
+			deleteVertex(graph[i], graph[i + 1]);
 		}
 	}
-	deleteLastDinh();
-	
+	deleteLastVertex();
+
 	// X?a canh cuoi c?ng
-	if(position==nDinh-1)
+	if (position == nVertex - 1)
 	{
-		for (int i=0;i<nDinh;i++)
+		for (int i = 0; i < nVertex; i++)
 		{
-			MatrixWeight[i][nDinh-1]=0;
-			MatrixWeight[nDinh-1][i]=0;
+			MatrixWeight[i][nVertex - 1] = 0;
+			MatrixWeight[nVertex - 1][i] = 0;
 		}
-		
 	}
 	// X?a canh bat ki
 	else
 	{
-		for (int i = position; i < nDinh - 1; ++i){
-			for (int j = 0; j < nDinh; ++j){
+		for (int i = position; i < nVertex - 1; ++i)
+		{
+			for (int j = 0; j < nVertex; ++j)
+			{
 				MatrixWeight[i][j] = MatrixWeight[i + 1][j];
 			}
 		}
-						
-		for (int i = 0; i < nDinh; ++i){
-			for (int j = position; j < nDinh - 1; ++j){
+
+		for (int i = 0; i < nVertex; ++i)
+		{
+			for (int j = position; j < nVertex - 1; ++j)
+			{
 				MatrixWeight[i][j] = MatrixWeight[i][j + 1];
 			}
-		}	
+		}
 	}
-	nDinh--;
-	renewGraph();	
+	nVertex--;
+	renewGraph();
 }
 bool isWorkingZone(int x, int y)
 {
@@ -773,81 +811,82 @@ bool isWorkingZone(int x, int y)
 	}
 	return false;
 }
-void moveDinh()
+void moveVertex()
 {
-	int x,y,position;
+	int x, y, position;
 
 	outtextxy(370, 520, "Chon dinh va keo toi vi tri can toi !");
 	while (true)
 	{
 		drawTutorial();
 		outtextxy(370, 520, "Chon dinh va keo toi vi tri can toi !");
-		x=0;
-		y=0;
+		x = 0;
+		y = 0;
 		delay(1);
-		if(ismouseclick(WM_LBUTTONDOWN)){
-				while (isDinh(x, y) == -1 && x != -1 && y != -1)
+		if (ismouseclick(WM_LBUTTONDOWN))
 		{
+			while (isVertex(x, y) == -1 && x != -1 && y != -1)
+			{
+				while (true)
+				{
+					delay(1);
+					if (ismouseclick(WM_LBUTTONDOWN))
+					{
+						getmouseclick(WM_LBUTTONDOWN, x, y);
+						break;
+					}
+				}
+			}
+			position = isVertex(x, y);
+			clearMouseClick();
 			while (true)
 			{
-				delay(1);
-				if (ismouseclick(WM_LBUTTONDOWN))
+				delay(.001);
+				if (ismouseclick(WM_LBUTTONUP))
 				{
-					getmouseclick(WM_LBUTTONDOWN, x, y);
+					getmouseclick(WM_LBUTTONUP, x, y);
+				}
+				if (isWorkingZone(x, y) && isVertex(x, y) == -1)
+				{
+					graph[position].x = x;
+					graph[position].y = y;
 					break;
 				}
 			}
+			clearMouseClick();
+			renewGraph();
 		}
-		position=isDinh(x,y);
-		clearMouseClick();
-		while(true)
+		else if (ismouseclick(WM_RBUTTONDOWN))
 		{
-			delay(.001);
-			if(ismouseclick(WM_LBUTTONUP))
-			{
-				getmouseclick(WM_LBUTTONUP,x,y);
-			}
-			if (isWorkingZone(x,y) && isDinh(x, y) == -1){
-				graph[position].x=x;
-				graph[position].y=y;
-				break;
-			}
-		}
-		clearMouseClick();
-		renewGraph();
-		}
-		else if(ismouseclick(WM_RBUTTONDOWN)){
-				clearMouseClick();
-				renewGraph();
+			clearMouseClick();
+			renewGraph();
 			break;
 		}
-	
 	}
 
-			
-//		position=isDinh(x,y);
-//		drawTutorial();
-//		outtextxy(370, 520, "Chon vao noi di chuyen toi!")
-//		while(true)
-//		{
-//			delay(.001);
-//			if(ismouseclick(WM_LBUTTONDOWN))
-//			{
-//				getmouseclick(WM_LBUTTONDOWN,x,y);
-//			}
-//			if (x >= (470 + BK) && x <= (1255 - BK) && y >= (30 + BK) && y <= (480 - BK) && x != -1 && y != -1 && isDinh(x, y) == -1){
-//				graph[position].x=x;
-//				graph[position].y=y;
-//				break;
-//			}
-//		}
-//		renewGraph();
+	//		position=isVertex(x,y);
+	//		drawTutorial();
+	//		outtextxy(370, 520, "Chon vao noi di chuyen toi!")
+	//		while(true)
+	//		{
+	//			delay(.001);
+	//			if(ismouseclick(WM_LBUTTONDOWN))
+	//			{
+	//				getmouseclick(WM_LBUTTONDOWN,x,y);
+	//			}
+	//			if (x >= (470 + BK) && x <= (1255 - BK) && y >= (30 + BK) && y <= (480 - BK) && x != -1 && y != -1 && isVertex(x, y) == -1){
+	//				graph[position].x=x;
+	//				graph[position].y=y;
+	//				break;
+	//			}
+	//		}
+	//		renewGraph();
 }
 void initTrace()
 {
-	for (int i=0;i<nDinh;i++)
+	for (int i = 0; i < nVertex; i++)
 	{
-			trace[i]=0;
+		trace[i] = 0;
 	}
 }
 void setTextPrintStyle()
@@ -860,54 +899,55 @@ void processDFS(int position)
 {
 	initTrace();
 	int stack[MAX];
-	int sp=1;
-	stack[sp]=position;
-	trace[position]=1;
+	int sp = 1;
+	stack[sp] = position;
+	trace[position] = 1;
 	int temp = position;
 	int result[MAX];
 	int x = 420;
 	int j = 0;
-	while (sp>0)
-	{	
-		position=stack[sp];
-		result[j]=position;
+	while (sp > 0)
+	{
+		position = stack[sp];
+		result[j] = position;
 		j++;
 		sp--;
-		changeColorDinh(position,12);
+		changeColorVertex(position, 12);
 		setTextPrintStyle();
 		outtextxy(370, 550, "DFS:");
-		outtextxy(x, 550,graph[position].name);
-		x+=35;
-		outtextxy(x, 550,"->");
-		x+=30;
-	
-		for (int i=0;i<nDinh;i++)
+		outtextxy(x, 550, graph[position].name);
+		x += 35;
+		outtextxy(x, 550, "->");
+		x += 30;
+
+		for (int i = 0; i < nVertex; i++)
 		{
-			if ((MatrixWeight[position][i]!=0) && (trace[i]==0))
+			if ((MatrixWeight[position][i] != 0) && (trace[i] == 0))
 			{
-				stack[++sp]=i;
-				trace[i]=1;
-				drawArrow(position,i,4);
-				changeColorDinh(position,12);
+				stack[++sp] = i;
+				trace[i] = 1;
+				drawEdge(position, i, 4);
+				changeColorVertex(position, 12);
 				delay(500);
 			}
 		}
-		changeColorDinh(position,6);
+		changeColorVertex(position, 6);
 	}
 	drawTutorial();
 	outtextxy(370, 520, "Chon dinh bat dau: ");
 	outtextxy(575, 520, graph[temp].name);
-	x=420;
-	for(int k =0 ; k<j; k++){
+	x = 420;
+	for (int k = 0; k < j; k++)
+	{
 		setTextPrintStyle();
 		outtextxy(370, 550, "DFS:");
-		outtextxy(x, 550,graph[result[k]].name);
-		x+=35;
-		if(k!=j-1){
-			outtextxy(x, 550,"->");
-			x+=30;
+		outtextxy(x, 550, graph[result[k]].name);
+		x += 35;
+		if (k != j - 1)
+		{
+			outtextxy(x, 550, "->");
+			x += 30;
 		};
-		
 	}
 }
 void DFS()
@@ -915,9 +955,9 @@ void DFS()
 	// Chon dinh
 	drawTutorial();
 	outtextxy(370, 520, "Chon dinh bat dau: ");
-	int x,y,position;
-	
-	while (isDinh(x, y) == -1 && x != -1 && y != -1)
+	int x, y, position;
+
+	while (isVertex(x, y) == -1 && x != -1 && y != -1)
 	{
 		while (true)
 		{
@@ -929,14 +969,14 @@ void DFS()
 			}
 		}
 	}
-	position = isDinh(x,y);
+	position = isVertex(x, y);
 	outtextxy(575, 520, graph[position].name);
 	//DFS
 	int result[MAX];
-	int sl=0;
-	int xx=370;
+	int sl = 0;
+	int xx = 370;
 	processDFS(position);
-	outtextxy(370,580,"Nhap 1 phim bat ki de tiep tuc ...");
+	outtextxy(370, 580, "Nhap 1 phim bat ki de tiep tuc ...");
 	getch();
 	renewGraph();
 }
@@ -947,9 +987,9 @@ void processFunction(int type)
 	case 1:
 		//DFS
 		drawTutorial();
-		if(nDinh!=0)
+		if (nVertex != 0)
 		{
-			DFS();	
+			DFS();
 		}
 		else
 		{
@@ -964,7 +1004,7 @@ void processFunction(int type)
 		//X->Y
 		break;
 	case 4:
-		//Dinh TRU
+		//Vertex TRU
 		break;
 	case 5:
 		//DINH THAT
@@ -985,18 +1025,18 @@ void processFunction(int type)
 		//TPLT
 		break;
 	case 11:
-		if (nDinh!=0)
+		if (nVertex != 0)
 		{
 			char a;
 			drawTutorial();
 			outtextxy(370, 520, "Ban co muon xoa do thi hien tai? (Y/N)");
-			a= getch();
-			if (a ==89 || a==121)
+			a = getch();
+			if (a == 89 || a == 121)
 			{
-				clearDoThi();
+				clearGraph();
 				openFile();
 			}
-			else 
+			else
 			{
 				drawTutorial();
 				break;
@@ -1005,13 +1045,13 @@ void processFunction(int type)
 		else
 		{
 			openFile();
-		} 
+		}
 		break;
 	case 12:
 		drawTutorial();
-		if(nDinh!=0)
+		if (nVertex != 0)
 		{
-			saveFile();	
+			saveFile();
 		}
 		else
 		{
@@ -1020,16 +1060,16 @@ void processFunction(int type)
 		break;
 	case 13:
 		drawTutorial();
-		if (nDinh!=0)
+		if (nVertex != 0)
 		{
 			char a;
 			outtextxy(370, 520, "Ban co muon xoa do thi hien tai? (Y/N)");
-			a= getch();
-			if (a ==89 || a==121)
+			a = getch();
+			if (a == 89 || a == 121)
 			{
-				clearDoThi();
+				clearGraph();
 			}
-			else 
+			else
 			{
 				drawTutorial();
 				break;
@@ -1038,13 +1078,13 @@ void processFunction(int type)
 		else
 		{
 			outtextxy(370, 520, "Khong co gi de xoa !");
-		} 
+		}
 		break;
 	case 14:
-		if (nDinh < MAX)
+		if (nVertex < MAX)
 		{
 			drawTutorial();
-			createDinh();
+			drawVertex();
 			clearMouseClick();
 		}
 		else
@@ -1057,11 +1097,11 @@ void processFunction(int type)
 	case 15:
 		//XOA DINH
 		drawTutorial();
-		if(nDinh>0)
+		if (nVertex > 0)
 		{
-			removeDinh();
+			removeVertex();
 		}
-		else 
+		else
 		{
 			drawTutorial();
 			outtextxy(370, 520, "KHONG DU DINH ");
@@ -1070,10 +1110,10 @@ void processFunction(int type)
 		break;
 	case 16:
 		//TAO CUNG
-		if (nDinh >= 2)
+		if (nVertex >= 2)
 		{
 			drawTutorial();
-			createCanh();
+			createEdge();
 			clearMouseClick();
 		}
 		else
@@ -1085,12 +1125,12 @@ void processFunction(int type)
 		break;
 	case 17:
 		//DICH DINH
-	
-		if (nDinh >0)
+
+		if (nVertex > 0)
 		{
 			drawTutorial();
 			clearMouseClick();
-			moveDinh();
+			moveVertex();
 		}
 		else
 		{
@@ -1101,19 +1141,19 @@ void processFunction(int type)
 		break;
 	case 18:
 		drawTutorial();
-		if (nDinh>0)
+		if (nVertex > 0)
 		{
 			changeNameDinh();
 		}
 		else
 		{
 			outtextxy(370, 520, "Khong du dinh");
-			break;	
+			break;
 		}
 		break;
 	}
 }
-bool chooseFunction(Dinh s)
+bool chooseFunction(Vertex s)
 {
 	int x, y;
 
@@ -1125,7 +1165,7 @@ bool chooseFunction(Dinh s)
 	}
 	return false;
 }
-void addMouse(Dinh s, int &x, int &y, bool &isSelected, int type)
+void addMouse(Vertex s, int &x, int &y, bool &isSelected, int type)
 {
 	if ((x != -1 && y != -1) && (x >= s.x && x <= s.x + 101) && (y >= s.y && y <= s.y + 41))
 	{
@@ -1143,7 +1183,7 @@ void addMouse(Dinh s, int &x, int &y, bool &isSelected, int type)
 
 	//	clearMouseClick();
 }
-void processMouse(Dinh s[][10])
+void processMouse(Vertex s[][10])
 {
 	int x, y = 0;
 	bool isSelected = false;
@@ -1151,12 +1191,13 @@ void processMouse(Dinh s[][10])
 	{
 		delay(1);
 		getmouseclick(WM_MOUSEMOVE, x, y);
-		if(ismouseclick(WM_LBUTTONDOWN)){
+		if (ismouseclick(WM_LBUTTONDOWN))
+		{
 			getmouseclick(WM_LBUTTONDOWN, x, y);
-			cout<<x<<y<<endl;
-			clearmouseclick(WM_LBUTTONDOWN);	
+			cout << x << y << endl;
+			clearmouseclick(WM_LBUTTONDOWN);
 		}
-	
+
 		addMouse(s[0][0], x, y, isSelected, 1);
 		addMouse(s[0][1], x, y, isSelected, 2);
 		addMouse(s[0][2], x, y, isSelected, 3);
@@ -1191,13 +1232,13 @@ void initMatrixWeight()
 void renewGraph()
 {
 	clearMouseClick();
-	drawGraph();
-	drawDinh();
-	drawAllCanh();
+	drawWorkingZone();
+	drawAllVertex();
+	drawAllEdge();
 }
 int main(int argc, char *argv[])
 {
-	Dinh a[3][10];
+	Vertex a[3][10];
 	initwindow(1280, 720); // init window graphics						// set background
 	cleardevice();
 	drawUI(a);
@@ -1209,4 +1250,3 @@ int main(int argc, char *argv[])
 	closegraph();
 	return 0;
 }
-
