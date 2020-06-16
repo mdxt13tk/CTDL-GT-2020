@@ -320,7 +320,7 @@ Dinh drawArrow(int posStart, int posEnd, int color)
 	yVTPT = x2 - x1;
 	lenVTPT = Round(sqrt(pow(xVTPT, 2) + pow(yVTPT, 2)));
 	lenAG = distanceTwoPoint(x1, y1, xG, yG);
-	k = (float)lenAG / 2*lenVTPT;
+	k = (float)lenAG / (1.5*lenVTPT);
 	xG1 = Round(xG + k * xVTPT);
 	yG1 = Round(yG + k * yVTPT);
 
@@ -627,7 +627,7 @@ void openFile()
 	f.close();
 	renewGraph();
 }
-void ClearDoThi()
+void clearDoThi()
 {
 	for (int i = 0; i < nDinh; i++)
 	{
@@ -744,7 +744,7 @@ void removeDinh()
 	{
 		for (int i = 0; i < nDinh; i++)
 		{
-				MatrixWeight[i][j] = MatrixWeight[i + 1][j];
+				//MatrixWeight[i][j] = MatrixWeight[i + 1][j];
 			}
 		}
 		for (int i = 0; i < nDinh; ++i)
@@ -988,7 +988,7 @@ void processFunction(int type)
 			a = getch();
 			if (a == 89 || a == 121)
 			{
-				ClearDoThi();
+				clearDoThi();
 				openFile();
 			}
 			else
@@ -1022,7 +1022,7 @@ void processFunction(int type)
 			a = getch();
 			if (a == 89 || a == 121)
 			{
-				ClearDoThi();
+				clearDoThi();
 			}
 			else
 			{
