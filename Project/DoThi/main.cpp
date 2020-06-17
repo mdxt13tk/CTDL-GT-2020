@@ -1060,7 +1060,162 @@ void BFS()
 	getch();
 	renewGraph();
 }
+void initDijkstra(int start, bool isVisited[], int dist[])
+{
+	for (int i = 0; i < nVertex; i++)
+	{
+		trace[i] = start;
+		isVisited[i] = 1;
+		dist[i] = MAX_VALUE;
+	}
+}
+void drawXtoY(int dist[],int trace[],int posStart,int posEnd){
+	if(dist[posEnd]==MAX_VALUE){
+		drawTutorial();
+		outtextxy(370,520, "Chon dinh bat dau: ");
+		outtextxy(575,520, graph[posStart].name);
+		outtextxy(370, 540, "Chon dinh ket thuc: ");
+		outtextxy(575,540, graph[posEnd].name);
+		outtextxy(370,560,"KHONG CO DUONG DI");
+	}else{
+		int result[nVertex];
+		int n = 0;
+		result[n]=posEnd;
+		n++;
+		int temp = trace[posEnd];
+		while(posStart!=temp){
+			result[n]=temp;
+			n++;
+			temp=trace[temp];
+		}
+		result[n]=posStart;
+	
+		drawTutorial();
+		outtextxy(370,520, "Chon dinh bat dau: ");
+		outtextxy(575,520, graph[posStart].name);
+		outtextxy(370, 540, "Chon dinh ket thuc: ");
+		outtextxy(590,540, graph[posEnd].name);
+		outtextxy(370, 560, "Tong trong so: ");
+		outtextxy(530,560, &coverIntToString(dist[posEnd])[0]);
+		outtextxy(370, 580, "Duong di ngan nhat: ");
+		int x = 600;
 
+		int first = result[n];
+		int next ;
+		
+		changeColorVertex(first, 12);
+		setTextPrintStyle();
+		outtextxy(x, 580,graph[first].name);
+		while(n>0){
+			setTextPrintStyle();
+			n--;
+			next = result[n];
+			x += 35;
+			outtextxy(x,580,"=>");
+			x += 30;
+			outtextxy(x, 580,graph[next].name);
+			changeColorVertex(next, 12);
+			drawEdge(first, next, 14);
+			first=next;
+			delay(500);
+		}
+	}
+
+}
+void processXtoY(int posStart, int posEnd)
+{
+	bool isVisited[nVertex];
+	int dist[nVertex];
+	int truoc,sau;
+	initDijkstra(posStart, isVisited, dist);
+	dist[posStart] = 0;
+	while (1)
+	{
+		truoc = MAX_VALUE;
+		sau = -1;
+		for (int i = 0; i < nVertex; ++i){
+			if (isVisited[i] && dist[i] < truoc)
+			{
+				truoc = dist[i]; // Find Min(truoc,sau)
+				sau = i;
+			}
+		}
+		
+		if (sau == -1 || sau == posEnd)	break;
+		isVisited[sau] = 0;
+		for (int i = 0; i < nVertex; ++i)
+		{
+			int weight = MatrixWeight[sau][i];
+			if (isVisited[i] && weight != 0 && dist[i] > truoc + weight)
+			{
+				dist[i] = truoc + weight; // (truoc,sau) ->(1,a)
+				trace[i] = sau;
+			}
+		}
+	}
+	drawXtoY(dist,trace,posStart,posEnd);
+}
+void XtoY()
+{
+	clearMouseClick();
+	drawTutorial();
+	outtextxy(370, 520, "Chon dinh bat dau");
+	int x, y;
+	int posStart, posEnd;
+	while(1){
+	delay(1);
+	if (ismouseclick(WM_LBUTTONDOWN))
+	{
+	getmouseclick(WM_LBUTTONDOWN, x, y);
+	while (isVertex(x, y) == -1 && x != -1 && y != -1)
+	{
+		while (true)
+		{
+			delay(1);
+			if (ismouseclick(WM_LBUTTONDOWN))
+			{
+				getmouseclick(WM_LBUTTONDOWN, x, y);
+				break;
+			}
+		}
+	}
+	posStart = isVertex(x, y);
+	changeColorVertex(isVertex(x, y), 12);
+	
+	clearMouseClick();
+	drawTutorial();
+	x = 0;
+	y = 0;
+	outtextxy(370, 540, "Chon dinh ket thuc");
+	
+	while (isVertex(x, y) == -1 || isStartVertex(x, y, graph[posStart]) == 1)
+	{
+		while (true)
+		{
+			delay(1);
+			if (ismouseclick(WM_LBUTTONDOWN))
+			{
+				getmouseclick(WM_LBUTTONDOWN, x, y);
+				break;
+			}
+		}
+	}
+	posEnd = isVertex(x, y);
+	changeColorVertex(isVertex(x, y), 12);
+	processXtoY(posStart, posEnd);
+	setTextPrintStyle();
+	outtextxy(370, 600, "Nhap 1 phim bat ki de tiep tuc ...");
+	getch();
+	renewGraph();
+	break;
+	}
+	else if(ismouseclick(WM_RBUTTONDOWN))
+	{
+		renewGraph();
+		break;	
+	}	
+	}
+}
 void processFunction(int type)
 {
 	switch (type)
@@ -1091,9 +1246,27 @@ void processFunction(int type)
 		break;
 	case 3:
 		//X->Y
-		break;
+			drawTutorial();
+			if (nVertex != 0)
+			{
+				XtoY();
+			}
+			else
+			{
+				outtextxy(370, 520, "Khong du dinh!");
+			}
+			break;
 	case 4:
 		//Vertex TRU
+			drawTutorial();
+			if (nVertex != 0)
+			{
+				XtoY();
+			}
+			else
+			{
+				outtextxy(370, 520, "Khong du dinh!");
+			}
 		break;
 	case 5:
 		//DINH THAT

@@ -1,6 +1,7 @@
 #pragma once
 #define MAX 20
 #define BK 25
+#define MAX_VALUE 19981
 #define Round(a) (int)(a + 0.5)
 
 const int BG_COLOR_MENU = 7;
