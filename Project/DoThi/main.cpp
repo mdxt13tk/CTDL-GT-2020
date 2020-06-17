@@ -326,13 +326,12 @@ Vertex drawEdge(int posStart, int posEnd, int color)
 	xG1 = Round(xG + k * xVTPT);
 	yG1 = Round(yG + k * yVTPT);
 
-	if (MatrixWeight[posEnd][posStart] == 0 || posStart < posEnd)
+	if (posStart < posEnd)
 	{
 		int px[2] = {x1, x2};
 		int py[2] = {y1, y2};
 		dinhtrongso.x = Round((x1 + x2) / 2.0f);
 		dinhtrongso.y = Round((y1 + y2) / 2.0f);
-
 		drawBezierLine(px, py, 2, color);
 	}
 	else
@@ -355,12 +354,11 @@ Vertex drawEdge(int posStart, int posEnd, int color)
 	return dinhtrongso;
 }
 
-void drawTrongSo(Vertex dinhtrongso, int trongso)
+void drawTrongSo(Vertex dinhtrongso, int trongso, bool clear)
 {
 	int x, y;
-	int currentColor = getcolor();
 	setbkcolor(15);
-	if (trongso == 0)
+	if (trongso == 0 || clear == true)
 	{
 		setbkcolor(BG_COLOR_GRAPH);
 		setcolor(BG_COLOR_GRAPH);
@@ -370,7 +368,6 @@ void drawTrongSo(Vertex dinhtrongso, int trongso)
 		setcolor(COLOR_TEXT);
 	}
 	outtextxy(dinhtrongso.x, dinhtrongso.y, &coverIntToString(trongso)[0]);
-	setcolor(currentColor);
 }
 
 void drawAllEdge()
@@ -381,7 +378,7 @@ void drawAllEdge()
 			if (MatrixWeight[i][j] != 0)
 			{
 				vertexweightnumber = drawEdge(i, j, 15);
-				drawTrongSo(vertexweightnumber, MatrixWeight[i][j]);
+				drawTrongSo(vertexweightnumber, MatrixWeight[i][j], false);
 			}
 }
 
@@ -533,27 +530,22 @@ void createEdge()
 			posEnd = isVertex(x, y);
 			changeColorVertex(isVertex(x, y), 12);
 
-			if (MatrixWeight[posEnd][posStart] != 0)
-			{
-				//do nothing.
-			}
-
-			MatrixWeight[posStart][posEnd] = 0;
+			int temp = MatrixWeight[posStart][posEnd];
 
 			Vertex dinhtrongso = drawEdge(posStart, posEnd, 4);
-
+			
 			int trongso = createTrongSo();
+			MatrixWeight[posStart][posEnd] = trongso;
+
 			if (trongso == 0)
-			{
-				MatrixWeight[posStart][posEnd] = 0;
+				//clear old edge.
 				drawEdge(posStart, posEnd, BG_COLOR_GRAPH);
-			}
 			else
-			{
-				MatrixWeight[posStart][posEnd] = trongso;
 				drawEdge(posStart, posEnd, 15);
-			}
-			drawTrongSo(dinhtrongso, trongso);
+			
+			drawTrongSo(dinhtrongso, temp, true); // clear old value.
+			drawTrongSo(dinhtrongso, trongso, false);
+
 			changeColorVertex(posStart, 2);
 			changeColorVertex(posEnd, 2);
 			drawMatrixTT();
