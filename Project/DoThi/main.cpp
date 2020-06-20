@@ -1286,6 +1286,96 @@ void dinhThat()
 		renewGraph();
 	}
 }
+void drawHamilton()
+{
+	nHamilton++;
+	setTextPrintStyle();
+	outtextxy(370, 550, "Chu trinh hamilton: ");
+	int x = 580;
+	int start = path[0];
+	int next;
+	changeColorVertex(start, 6);
+	setTextPrintStyle();
+	outtextxy(x, 550, graph[start].name);
+	x += 35;
+	outtextxy(x, 550, "->");
+	x += 30;
+	for (int i = 1; i < nPath; i++)
+	{
+		next = path[i];
+		changeColorVertex(next, 6);
+		drawEdge(start, next, 4);
+		setTextPrintStyle();
+		outtextxy(x, 550, graph[path[i]].name);
+		x += 35;
+		outtextxy(x, 550, "->");
+		x += 30;
+		start = next;
+
+		delay(600);
+	}
+
+	outtextxy(x, 550, graph[path[0]].name);
+	drawEdge(next, path[0], 4);
+	
+}
+void processHamilton(int startPos)
+{
+	int temp = startPos;
+	path[nPath++] = startPos;
+	trace[startPos] = 1;
+	if (nPath == nVertex && MatrixWeight[startPos][path[0]] != 0)
+	{
+		drawHamilton();
+	}
+	else
+	{
+		for (int i = 0; i < nVertex; i++)
+		{
+			if (MatrixWeight[startPos][i] != 0 && trace[i] == 0)
+			{
+				processHamilton(i);
+			}
+		}
+	}
+	nPath--;
+	trace[startPos] = 0; //Backtracking
+}
+void hamilton()
+{
+	// Chon dinh
+	drawTutorial();
+	outtextxy(370, 520, "Chon dinh bat dau: ");
+	int x, y, position;
+
+	while (isVertex(x, y) == -1 && x != -1 && y != -1)
+	{
+		while (true)
+		{
+			delay(1);
+			if (ismouseclick(WM_LBUTTONDOWN))
+			{
+				getmouseclick(WM_LBUTTONDOWN, x, y);
+				break;
+			}
+		}
+	}
+	position = isVertex(x, y);
+	outtextxy(575, 520, graph[position].name);
+	initTrace();
+	nHamilton=0;
+	processHamilton(position);
+	setTextPrintStyle();
+	if (nHamilton == 0)
+	{
+		drawTutorial(); 
+		outtextxy(370, 520, "Khong cho chu trinh Hamilton");
+		outtextxy(370, 590, "Nhap 1 phim bat ki de tiep tuc ...");
+	}
+	outtextxy(370, 590, "Nhap 1 phim bat ki de tiep tuc ...");
+	getch();
+	renewGraph();
+}
 void processFunction(int type)
 {
 	cout << type << endl;
@@ -1359,7 +1449,16 @@ void processFunction(int type)
 		//CANH CAU
 		break;
 	case 8:
-		//HAMILTON
+		drawTutorial();
+		if (nVertex != 0)
+		{
+			hamilton();
+		}
+		else
+		{
+			outtextxy(370, 520, "Khong du dinh!");
+		}
+
 		break;
 	case 9:
 		//EULER

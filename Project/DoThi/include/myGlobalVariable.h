@@ -30,5 +30,7 @@ Vertex graph[MAX];
 //Dinh pointDDA[1000];
 int trace[MAX];
 bool mark[MAX];
+int path[MAX],nPath=0;
+int nHamilton = 0;
 int MatrixWeight[MAX][MAX];
 string fileName = "";
