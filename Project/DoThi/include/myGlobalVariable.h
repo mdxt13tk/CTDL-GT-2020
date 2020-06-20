@@ -29,5 +29,6 @@ Vertex graph[MAX];
 //int nPointDDA = 0;
 //Dinh pointDDA[1000];
 int trace[MAX];
+bool mark[MAX];
 int MatrixWeight[MAX][MAX];
 string fileName = "";

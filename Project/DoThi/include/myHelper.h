@@ -116,3 +116,18 @@ string coverIntToString(int number)
 	ss >> result;
 	return result;
 }
+int coverStringToInt(string value)
+{
+	int result;
+	stringstream ss;
+	ss << value;
+	ss >> result;
+	return result;
+}
+string removeCharater(string a)
+{
+	string s = "";
+	for (int i = 0; i < a.length() - 1; i++)
+		s += a[i];
+	return s;
+}
