@@ -1386,10 +1386,10 @@ void hamilton()
 	getch();
 	renewGraph();
 }
-void drawEuler(int result[], int nResult)
+void draw(int result[], int nResult, char *a)
 {
 	setTextPrintStyle();
-	outtextxy(370, 520, "Chu trinh Euler: ");
+	outtextxy(370, 520, a);
 	int x = 370;
 	int start = result[0];
 	int next;
@@ -1430,13 +1430,13 @@ void processEuler()
 	while (sp != 0)
 	{
 		int count = 0;
-		s = stack[sp]; // get first position 
+		s = stack[sp]; // get first position
 		for (int i = 0; i < nVertex; i++)
 		{
-			if (MatrixWeight2[s][i] == 0) 
+			if (MatrixWeight2[s][i] == 0)
 				count++;
 		}
-		if (count != nVertex)  // if still have Edge from s to another Vertex 
+		if (count != nVertex) // if still have Edge from s to another Vertex
 		{
 			for (int k = 0; k < nVertex; k++)
 			{
@@ -1448,7 +1448,7 @@ void processEuler()
 				}
 			}
 		}
-		else // if there are not any Edge from s to another Vertex 
+		else // if there are not any Edge from s to another Vertex
 		{
 			sp--;
 			result[nResult++] = s;
@@ -1460,7 +1460,7 @@ void processEuler()
 	{
 		revertResult[j++] = result[i];
 	}
-	drawEuler(revertResult, nResult);
+	draw(revertResult, nResult, "Chu trinh Euler: ");
 }
 void euler()
 {
@@ -1487,7 +1487,7 @@ void euler()
 				if (MatrixWeight[j][i] != 0)
 					countColumn++;
 			}
-			if (countRow != countColumn)
+			if (countRow != countColumn) // ban bac ra = ban bac vao
 			{
 				cout << "DUoi" << endl;
 				outtextxy(370, 520, "KHONG CO CHU TRINH EULER!");
@@ -1500,6 +1500,94 @@ void euler()
 			processEuler();
 		}
 	}
+}
+void drawTopo(int result[], int nResult)
+{
+	setTextPrintStyle();
+	outtextxy(370, 520, "Thuat toan sap xep Topo: ");
+	int x = 370;
+	for (int i = 0; i < nResult; i++)
+	{
+		changeColorVertex(result[i], 6);
+		setTextPrintStyle();
+		outtextxy(x, 550, graph[result[i]].name);
+		x += 35;
+		if (i != nResult - 1)
+		{
+			outtextxy(x, 550, "->");
+			x += 30;
+		};
+		delay(500);
+	}
+	outtextxy(370, 580, "Nhap 1 phim bat ki de tiep tuc ...");
+	getch();
+	renewGraph();
+}
+void topoSort()
+{
+	initTrace();
+	int vertexNotEdge[MAX * MAX], result[MAX];
+	int nVNE = 0, nResult = 0;
+	int count, processingVNE = 0, temp = 0;
+	for (int i = 0; i < nVertex; i++)
+	{
+		count = 0;
+		for (int j = 0; j < nVertex; j++)
+		{
+			if (MatrixWeight[j][i] != 0)
+				count++;
+		}
+		if (count == 0)
+		{
+			cout << graph[i].name << " ";
+			vertexNotEdge[nVNE++] = i;
+			trace[i] = 1;
+		}
+	}
+	nVNE--;
+	while (processingVNE <= nVNE)
+	{
+		result[nResult] = vertexNotEdge[processingVNE];
+		nResult++;
+		temp = vertexNotEdge[processingVNE];
+		processingVNE++;
+
+		for (int i = 0; i < nVertex; i++)
+		{
+			if (MatrixWeight2[temp][i] != 0)
+				MatrixWeight2[temp][i] = 0; // remove BAC RA of temp
+			count = 0;
+			for (int j = 0; j < nVertex; j++)
+			{
+				if (MatrixWeight2[j][i] != 0)
+					count++;
+			}
+			if (count == 0 && trace[i] == 0) // cont-> Check if Matrix have any new vertexNotEdge
+			{
+				nVNE++;
+				vertexNotEdge[nVNE] = i;
+				trace[i] = 1;
+			}
+		}
+	}
+	bool isDone = true;
+	for (int i = 0; i < nVertex; i++)
+	{
+		for (int j = 0; j < nVertex; j++)
+		{
+			if (MatrixWeight2[i][j] != 0)
+			{
+				isDone = false;
+				break;
+			}
+		}
+		if (isDone == false)
+			break;
+	}
+	if (isDone == false)
+		outtextxy(370, 520, " Do thi ton tai chu trinh hoac khong thoai dieu kien");
+	else
+		drawTopo(result, nResult);
 }
 void processFunction(int type)
 {
@@ -1598,6 +1686,15 @@ void processFunction(int type)
 		break;
 	case 10:
 		//TOPO
+		drawTutorial();
+		if (nVertex != 0)
+		{
+			topoSort();
+		}
+		else
+		{
+			outtextxy(370, 520, "Khong du dinh!");
+		}
 		break;
 	case 11:
 		if (nVertex != 0)
