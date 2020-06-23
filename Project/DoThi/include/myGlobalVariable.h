@@ -32,4 +32,5 @@ bool mark[MAX];
 int path[MAX],nPath=0;
 int nHamilton = 0;
 int MatrixWeight[MAX][MAX];
+int MatrixWeight2[MAX][MAX];
 string fileName = "";
