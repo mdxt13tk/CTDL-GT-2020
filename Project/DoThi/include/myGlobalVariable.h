@@ -26,8 +26,7 @@ struct Vertex
 
 int nVertex = 0;
 Vertex graph[MAX];
-//int nPointDDA = 0;
-//Dinh pointDDA[1000];
+
 int trace[MAX];
 bool mark[MAX];
 int path[MAX],nPath=0;
