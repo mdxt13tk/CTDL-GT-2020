@@ -240,7 +240,7 @@ void drawAllVertex()
 	drawMatrixTT();
 }
 
-char *createVertex()
+char *createNameVertex()
 {
 	drawTutorial();
 	char c;
@@ -430,9 +430,11 @@ void drawVertex()
 				setcolor(BG_COLOR_VERTEX);
 				pieslice(graph[nVertex].x, graph[nVertex].y, 0, 0, BK);
 				graph[nVertex].name = new char[3];
-			back:
+
 				char *result = new char[3];
-				result = createVertex();
+
+			back:
+				result = createNameVertex();
 
 				if (nVertex > 0)
 				{
@@ -449,6 +451,8 @@ void drawVertex()
 				{
 					graph[nVertex].name[i] = result[i];
 				}
+
+				delete result;
 
 				setcolor(15);
 				setbkcolor(BG_COLOR_VERTEX);
@@ -506,7 +510,7 @@ string processFileName()
 	drawTutorial();
 	char c;
 	string fileName;
-	char *result = new char[20];
+	//char *result = new char[20];
 	string s;
 	outtextxy(370, 520, "Nhap toi da 15 chu va so. Nhan ENTER de ket thuc");
 	outtextxy(370, 540, "Ten file: ");
@@ -612,7 +616,7 @@ void clearGraph()
 	fileName = "";
 	renewGraph();
 }
-void changeNameDinh()
+void changeNameVertex()
 {
 	int x, y, position;
 	outtextxy(370, 520, "Nhap vao dinh can doi ten, khong duoc trung voi dinh da ton tai");
@@ -629,9 +633,10 @@ void changeNameDinh()
 		}
 	}
 	position = isVertex(x, y);
-back:
+
 	char *result = new char[3];
-	result = createVertex();
+back:
+	result = createNameVertex();
 
 	if (nVertex > 0)
 	{
@@ -648,6 +653,8 @@ back:
 	{
 		graph[position].name[i] = result[i];
 	}
+
+	delete result;
 	changeColorVertex(position, 2);
 	drawTutorial();
 	drawMatrixTT();
@@ -693,7 +700,7 @@ void removeVertex()
 	}
 
 	position = isVertex(x, y);
-
+	delete graph[position].name;
 	// X?a dinh cuoi c?ng
 	if (position == nVertex - 1)
 	{
@@ -1139,9 +1146,9 @@ void drawVertexTPLT(int result[], int nResult, int color)
 void TPLT()
 {
 	initTrace();
-	outtextxy(370, 510, "CAC THANH PHAN LIEN THONG CUA DO THI:");
+	outtextxy(370, 510, "CAC THANH PHAN LIEN THONG MANH CUA DO THI:");
 	int result[MAX];
-	int nResult, type;
+	int nResult;
 	int color = 1, count = 0, x = 370, y = 540;
 	string title = "", content = "";
 	bool isDone = true;
@@ -1152,18 +1159,18 @@ void TPLT()
 		{
 			nResult = 0;
 			isDone = true;
-			processDFS(j, 1, result, nResult, 2);
-			if (nResult == 1)
+			processDFS(j, 1, result, nResult, 0);
+			if (nResult >= 2)
 			{
-				for (int i = 0; i < nVertex; i++)
-				{
-					if (MatrixWeight[i][result[0]] != 0)
+				if (MatrixWeight[result[1]][j] == 0 || MatrixWeight[result[nResult-1]][j]==0)
 					{
-						isDone = false;
-						trace[result[0]] = 0;
-						break;
+						//isDone = false;
+						for (int i = 1; i < nResult; i++)
+						{
+							trace[result[i]]=0;
+						}
+						nResult=1;
 					}
-				}
 			}
 			if (isDone)
 			{
@@ -1887,7 +1894,7 @@ void processFunction(int type)
 		drawTutorial();
 		if (nVertex > 0)
 		{
-			changeNameDinh();
+			changeNameVertex();
 		}
 		else
 		{
