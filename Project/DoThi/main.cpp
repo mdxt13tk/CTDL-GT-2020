@@ -892,7 +892,7 @@ void processDFS(int position, int speed, int result[], int &nResult, int type)
 		for (int k = 0; k < nResult; k++)
 		{
 			setTextPrintStyle();
-			outtextxy(370, 550, "DFS:");
+			outtextxy(370, 550, "DFS: ");
 			outtextxy(x, 550, graph[result[k]].name);
 			x += 35;
 			if (k != nResult - 1)
@@ -953,7 +953,7 @@ void processBFS(int position)
 		head++;
 		changeColorVertex(position, 12);
 		setTextPrintStyle();
-		outtextxy(370, 550, "BFS:");
+		outtextxy(370, 550, "BFS: ");
 		outtextxy(x, 550, graph[position].name);
 		x += 35;
 		outtextxy(x, 550, "->");
@@ -1632,6 +1632,33 @@ void topoSort()
 	else
 		drawTopo(result, nResult);
 }
+
+void connectedComponentDFS()
+{
+	int countCC = 0;
+	int result[MAX];
+	int nResult;
+	int y = 0;
+	//drawTutorial();
+	outtextxy(370, 520, "Cac thanh phan lien thong la: ");
+	for (int i = 0; i < nVertex; i++)
+	{
+		if (trace[i] == 0)
+		{
+			outtextxy(370, 540 + (i * 20), &coverIntToString(++countCC)[0]);
+			outtextxy(400, 540 + (i * 20), ":");
+			processDFS(i, 1, result, nResult, 0);
+			for (int j = 0; j < nResult; j++)
+			{
+				y = 540 + (i * 20);
+				outtextxy(410 + (j * 20), y, graph[result[j]].name);
+			}
+		}
+	}
+	string outStr = "Tong cong: " + coverIntToString(countCC);
+	outtextxy(370, y+20, &outStr[0]);
+}
+
 void processFunction(int type)
 {
 	cout << type << endl;
@@ -1662,6 +1689,8 @@ void processFunction(int type)
 		}
 		break;
 	case 3:
+		//drawTutorial();
+		//connectedComponentDFS();
 		//TPLT
 		drawTutorial();
 		if (nVertex != 0)
