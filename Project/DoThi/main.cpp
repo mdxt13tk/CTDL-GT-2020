@@ -839,21 +839,20 @@ void setTextPrintStyle()
 }
 void processDFS(int position, int speed, int result[], int &nResult, int type)
 {
-	
-	int stack[MAX];
-	int sp = 1;
-	stack[sp] = position;
-	trace[position] = 1;
+	STACK stack ;
+	stack.sp=-1;
 	int temp = position;
+	trace[position] = 1;
+	push(stack,position);
+
 	int x = 420;
 	nResult = 0;
-	while (sp > 0)
+	while (!empty(stack))
 	{
-		position = stack[sp];
+		pop(stack,position);
 		result[nResult] = position;
 		nResult++;
-		sp--;
-
+		
 		if (type == 1)
 		{
 			changeColorVertex(position, 12);
@@ -870,8 +869,9 @@ void processDFS(int position, int speed, int result[], int &nResult, int type)
 		{
 			if ((MatrixWeight[position][i] != 0) && (trace[i] == 0))
 			{
-				stack[++sp] = i;
 				trace[i] = 1;
+				push(stack,i);
+			
 				if (type == 1)
 				{
 					drawEdge(position, i, 4);
@@ -1145,7 +1145,6 @@ void TPLT()
 	int color = 1, count = 0, x = 370, y = 540;
 	string title = "", content = "";
 	bool isDone = true;
-	initTrace();
 
 	for (int j = 0; j < nVertex; j++)
 	{
@@ -1161,7 +1160,7 @@ void TPLT()
 					if (MatrixWeight[i][result[0]] != 0)
 					{
 						isDone = false;
-						trace[result[0]] == 0;
+						trace[result[0]] = 0;
 						break;
 					}
 				}
@@ -1458,15 +1457,21 @@ void draw(int result[], int nResult, char *a)
 void processEuler()
 {
 	initTrace();
-	int stack[MAX * MAX];
+	STACK stack ;
+	stack.sp=-1;
+	
+	//int stack[MAX * MAX];
 	int result[MAX * MAX];
 	int nResult = 0;
-	int sp = 1, s;
-	stack[sp] = 0;
-	while (sp != 0)
+	int s=0;
+	push(stack,s);
+	//stack[sp] = 0;
+	
+	while (!empty(stack))
 	{
 		int count = 0;
-		s = stack[sp]; // get first position
+		s = stack.nodes[stack.sp]; // get first position
+		
 		for (int i = 0; i < nVertex; i++)
 		{
 			if (MatrixWeight2[s][i] == 0)
@@ -1478,15 +1483,16 @@ void processEuler()
 			{
 				if (MatrixWeight2[s][k] != 0)
 				{
-					stack[++sp] = k;
+					// stack[++sp] = k;
+					push(stack,k);
 					MatrixWeight2[s][k] = MatrixWeight2[k][s] = 0; // Remove Edge is visited
 					break;
 				}
 			}
 		}
 		else // if there are not any Edge from s to another Vertex
-		{
-			sp--;
+		{	
+			stack.sp--;
 			result[nResult++] = s;
 		}
 	}

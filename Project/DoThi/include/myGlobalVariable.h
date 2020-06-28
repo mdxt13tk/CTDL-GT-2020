@@ -3,6 +3,7 @@
 #define BK 25
 #define MAX_VALUE 19981
 #define Round(a) (int)(a + 0.5)
+#define MAX_VALUE_1 MAX*MAX
 
 const int BG_COLOR_MENU = 7;
 const int BG_COLOR_VERTEX = 2;

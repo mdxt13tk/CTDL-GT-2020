@@ -131,3 +131,32 @@ string removeCharater(string a)
 		s += a[i];
 	return s;
 }
+
+struct stack
+{  
+   int sp;
+   int nodes[MAX_VALUE_1];
+};
+typedef struct stack STACK;
+bool empty(STACK st)
+{
+   if(st.sp == -1)
+      return true;
+   else
+      return false;
+}
+int push(STACK &st, int x)
+{
+   if(st.sp == MAX_VALUE_1-1) return 0;
+   st.nodes[++(st.sp)] = x;
+   return 1; 
+}
+int pop(STACK &st, int &x)
+{
+   if(empty(st)) return 0;
+   x=st.nodes[(st.sp)--];
+   return 1;
+}
+
+
+
