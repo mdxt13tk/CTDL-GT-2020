@@ -839,7 +839,7 @@ void setTextPrintStyle()
 }
 void processDFS(int position, int speed, int result[], int &nResult, int type)
 {
-	initTrace();
+	
 	int stack[MAX];
 	int sp = 1;
 	stack[sp] = position;
@@ -927,6 +927,7 @@ void DFS()
 	//DFS
 	int result[MAX];
 	int nResult, type;
+	initTrace();
 	processDFS(position, 500, result, nResult, 1);
 	outtextxy(370, 580, "Nhap 1 phim bat ki de tiep tuc ...");
 	getch();
@@ -1132,39 +1133,74 @@ void XtoY()
 	}
 }
 
-// void drawVertexTPLT(int result[], int nResult, int color)
-// {
-// }
-// void TPLT()
-// {
-// 	initTrace();
-// 	outtextxy(370, 520, "CAC THANH PHAN LIEN THONG CUA DO THI:");
-// 	int result[MAX];
-// 	int nResult, type;
-// 	int color = 1;
-// 	for (int j = 0; j < nVertex; j++)
-// 	{
-// 		if (trace[j] == 0)
-// 		{
-// 			processDFS(j, 100, result, nResult, 2);
-// 			if (color == 7 || color == 8)
-// 				color = 0;
-// 			for (int i = 0; i < nResult; i++)
-// 			{
-// 				for (int k = 0; k < nResult; k++)
-// 				{
-// 					if (MatrixWeight[result[i], result[k]] != 0 && MatrixWeight[result[k], result[i]] != 0)
-// 					{
-// 						changeColorVertex(result[i], color);
-// 						changeColorVertex(result[k], color);
-// 					}
-// 				}
-// 			}
+void drawVertexTPLT(int result[], int nResult, int color)
+{
+}
+void TPLT()
+{
+	initTrace();
+	outtextxy(370, 510, "CAC THANH PHAN LIEN THONG CUA DO THI:");
+	int result[MAX];
+	int nResult, type;
+	int color = 1, count = 0, x = 370, y = 540;
+	string title = "", content = "";
+	bool isDone = true;
+	initTrace();
 
-// 			color++;
-// 		}
-// 	}
-// }
+	for (int j = 0; j < nVertex; j++)
+	{
+		if (trace[j] == 0)
+		{
+			nResult = 0;
+			isDone = true;
+			processDFS(j, 1, result, nResult, 2);
+			if (nResult == 1)
+			{
+				for (int i = 0; i < nVertex; i++)
+				{
+					if (MatrixWeight[i][result[0]] != 0)
+					{
+						isDone = false;
+						trace[result[0]] == 0;
+						break;
+					}
+				}
+			}
+			if (isDone)
+			{
+				count++;
+				if (color == 7 || color == 8 || color == 2)
+					color = 0;
+				content = "";
+				for (int i = 0; i < nResult; i++)
+				{
+					if (content == "")
+					{
+						content = graph[result[i]].name;
+					}
+					else
+					{
+						content = content + "->" + graph[result[i]].name;
+					}
+
+					changeColorVertex(result[i], color);
+				}
+				setTextPrintStyle();
+				title = "TPLT " + coverIntToString(count) + ": ";
+				outtextxy(x, y, &title[0]);
+				outtextxy(x + 80, y, &content[0]);
+				if (y > 670)
+				{
+					x = x + 150;
+					y = 540;
+				}
+				else
+					y = y + 30;
+				color++;
+			}
+		}
+	}
+}
 void findStartAndEndPosition(int &startPos, int &endPos, bool &isRightCLick)
 {
 	clearMouseClick();
@@ -1467,6 +1503,7 @@ void euler()
 	int result[MAX * MAX];
 	int nResult, countRow, countColumn;
 	bool isEuler = true;
+	initTrace();
 	processDFS(0, 0, result, nResult, 2);
 	if (nResult != nVertex)
 	{
@@ -1585,7 +1622,7 @@ void topoSort()
 			break;
 	}
 	if (isDone == false)
-		outtextxy(370, 520, " Do thi ton tai chu trinh hoac khong thoai dieu kien");
+		outtextxy(370, 520, " Do thi ton tai chu trinh hoac khong thoa dieu kien");
 	else
 		drawTopo(result, nResult);
 }
@@ -1619,17 +1656,17 @@ void processFunction(int type)
 		}
 		break;
 	case 3:
-		//		//TPLT
-		//		drawTutorial();
-		//		if (nVertex != 0)
-		//		{
-		//			TPLT();
-		//		}
-		//		else
-		//		{
-		//			outtextxy(370, 520, "Khong du dinh!");
-		//		}
-		//		break;
+		//TPLT
+		drawTutorial();
+		if (nVertex != 0)
+		{
+			TPLT();
+		}
+		else
+		{
+			outtextxy(370, 520, "Khong du dinh!");
+		}
+		break;
 	case 4:
 		//Vertex TRU
 		drawTutorial();
