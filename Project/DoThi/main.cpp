@@ -315,9 +315,11 @@ Vertex drawEdge(int posStart, int posEnd, int color)
 	{
 		int px[2] = {x1, x2};
 		int py[2] = {y1, y2};
-		dinhtrongso.x = Round((x1 + x2) / 2.0f);
-		dinhtrongso.y = Round((y1 + y2) / 2.0f);
+
 		drawBezierLine(px, py, 2, color);
+
+		dinhtrongso.x = xG;
+		dinhtrongso.y = yG;
 	}
 	else
 	{
@@ -452,7 +454,7 @@ void drawVertex()
 					graph[nVertex].name[i] = result[i];
 				}
 
-				delete result;
+				delete[] result;
 
 				setcolor(15);
 				setbkcolor(BG_COLOR_VERTEX);
@@ -654,7 +656,7 @@ back:
 		graph[position].name[i] = result[i];
 	}
 
-	delete result;
+	delete[] result;
 	changeColorVertex(position, 2);
 	drawTutorial();
 	drawMatrixTT();
@@ -846,20 +848,20 @@ void setTextPrintStyle()
 }
 void processDFS(int position, int speed, int result[], int &nResult, int type)
 {
-	STACK stack ;
-	stack.sp=-1;
+	STACK stack;
+	stack.sp = -1;
 	int temp = position;
 	trace[position] = 1;
-	push(stack,position);
+	push(stack, position);
 
 	int x = 420;
 	nResult = 0;
 	while (!empty(stack))
 	{
-		pop(stack,position);
+		pop(stack, position);
 		result[nResult] = position;
 		nResult++;
-		
+
 		if (type == 1)
 		{
 			changeColorVertex(position, 12);
@@ -876,9 +878,11 @@ void processDFS(int position, int speed, int result[], int &nResult, int type)
 		{
 			if ((MatrixWeight[position][i] != 0) && (trace[i] == 0))
 			{
+
 				trace[i] = 1;
-				push(stack,i);
-			
+
+				push(stack, i);
+
 				if (type == 1)
 				{
 					drawEdge(position, i, 4);
@@ -1143,69 +1147,93 @@ void XtoY()
 void drawVertexTPLT(int result[], int nResult, int color)
 {
 }
+
+bool isStrongConnected(int result[], int nResult)
+{
+	int nResultTemp = 0;
+	int resultTemp[MAX];
+	for (int i = 0; i < nResult; i++)
+	{
+		initTrace();
+		processDFS(result[i], 1, resultTemp, nResultTemp, 0);
+		if (nResultTemp < nResult)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
 void TPLT()
 {
 	initTrace();
 	outtextxy(370, 510, "CAC THANH PHAN LIEN THONG MANH CUA DO THI:");
 	int result[MAX];
 	int nResult;
-	int color = 1, count = 0, x = 370, y = 540;
+	int color = 0, count = 0, x = 370, y = 540;
 	string title = "", content = "";
-	bool isDone = true;
 
 	for (int j = 0; j < nVertex; j++)
 	{
 		if (trace[j] == 0)
 		{
 			nResult = 0;
-			isDone = true;
 			processDFS(j, 1, result, nResult, 0);
 			if (nResult >= 2)
 			{
-				if (MatrixWeight[result[1]][j] == 0 || MatrixWeight[result[nResult-1]][j]==0)
-					{
-						//isDone = false;
-						for (int i = 1; i < nResult; i++)
-						{
-							trace[result[i]]=0;
-						}
-						nResult=1;
-					}
-			}
-			if (isDone)
-			{
-				count++;
-				if (color == 7 || color == 8 || color == 2)
-					color = 0;
-				content = "";
-				for (int i = 0; i < nResult; i++)
+				if (isStrongConnected(result, nResult) == false)
 				{
-					if (content == "")
+					for (int i = 1; i < nResult; i++)
 					{
-						content = graph[result[i]].name;
+						trace[result[i]] = 0;
 					}
-					else
-					{
-						content = content + "->" + graph[result[i]].name;
-					}
-
-					changeColorVertex(result[i], color);
-				}
-				setTextPrintStyle();
-				title = "TPLT " + coverIntToString(count) + ": ";
-				outtextxy(x, y, &title[0]);
-				outtextxy(x + 80, y, &content[0]);
-				if (y > 670)
-				{
-					x = x + 150;
-					y = 540;
+					nResult = 1;
 				}
 				else
-					y = y + 30;
-				color++;
+				{
+					for (int i = 0; i < nResult; i++)
+					{
+						trace[result[i]] = 1;
+					}
+				}
 			}
+
+			count++;
+
+			color = (count % 15 + color) / 2;
+
+			if (color == BG_COLOR_MENU || color == BG_COLOR_GRAPH || color == BG_COLOR_VERTEX)
+				color++;
+			content = "";
+			for (int i = 0; i < nResult; i++)
+			{
+				if (content == "")
+				{
+					content = graph[result[i]].name;
+				}
+				else
+				{
+					content = content + "->" + graph[result[i]].name;
+				}
+
+				changeColorVertex(result[i], color);
+			}
+			setTextPrintStyle();
+			title = "TPLT " + coverIntToString(count) + ": ";
+			outtextxy(x, y, &title[0]);
+			outtextxy(x + 80, y, &content[0]);
+			if (y > 640)
+			{
+				x = x + 150;
+				y = 540;
+			}
+			else
+				y = y + 30;
 		}
 	}
+	outtextxy(x, y, "Nhap mot phim bat ki de tiep tuc ...");
+	getch();
+	renewGraph();
 }
 void findStartAndEndPosition(int &startPos, int &endPos, bool &isRightCLick)
 {
@@ -1464,21 +1492,21 @@ void draw(int result[], int nResult, char *a)
 void processEuler()
 {
 	initTrace();
-	STACK stack ;
-	stack.sp=-1;
-	
+	STACK stack;
+	stack.sp = -1;
+
 	//int stack[MAX * MAX];
 	int result[MAX * MAX];
 	int nResult = 0;
-	int s=0;
-	push(stack,s);
+	int s = 0;
+	push(stack, s);
 	//stack[sp] = 0;
-	
+
 	while (!empty(stack))
 	{
 		int count = 0;
 		s = stack.nodes[stack.sp]; // get first position
-		
+
 		for (int i = 0; i < nVertex; i++)
 		{
 			if (MatrixWeight2[s][i] == 0)
@@ -1491,14 +1519,14 @@ void processEuler()
 				if (MatrixWeight2[s][k] != 0)
 				{
 					// stack[++sp] = k;
-					push(stack,k);
+					push(stack, k);
 					MatrixWeight2[s][k] = MatrixWeight2[k][s] = 0; // Remove Edge is visited
 					break;
 				}
 			}
 		}
 		else // if there are not any Edge from s to another Vertex
-		{	
+		{
 			stack.sp--;
 			result[nResult++] = s;
 		}
@@ -1642,20 +1670,28 @@ void topoSort()
 
 void connectedComponentDFS()
 {
+	initTrace();
 	int countCC = 0;
 	int result[MAX];
 	int nResult;
 	int y = 0;
 	//drawTutorial();
-	outtextxy(370, 520, "Cac thanh phan lien thong la: ");
+	outtextxy(370, 520, "Cac thanh phan lien thong manh la: ");
 	for (int i = 0; i < nVertex; i++)
 	{
 		if (trace[i] == 0)
 		{
+			nResult = 0;
 			outtextxy(370, 540 + (i * 20), &coverIntToString(++countCC)[0]);
 			outtextxy(400, 540 + (i * 20), ":");
 			processDFS(i, 1, result, nResult, 0);
-			for (int j = 0; j < nResult; j++)
+			if (nResult >= 2)
+				if (isStrongConnected(result, nResult) == false)
+					for (int k = 0; k < nResult; k++)
+					{
+						trace[result[k]] = 0;
+					}
+			for (int j = i; j < nResult; j++)
 			{
 				y = 540 + (i * 20);
 				outtextxy(410 + (j * 20), y, graph[result[j]].name);
@@ -1663,7 +1699,7 @@ void connectedComponentDFS()
 		}
 	}
 	string outStr = "Tong cong: " + coverIntToString(countCC);
-	outtextxy(370, y+20, &outStr[0]);
+	outtextxy(370, y + 20, &outStr[0]);
 }
 
 void processFunction(int type)
@@ -1697,12 +1733,13 @@ void processFunction(int type)
 		break;
 	case 3:
 		//drawTutorial();
-		//connectedComponentDFS();
+
 		//TPLT
 		drawTutorial();
 		if (nVertex != 0)
 		{
 			TPLT();
+			//connectedComponentDFS();
 		}
 		else
 		{
