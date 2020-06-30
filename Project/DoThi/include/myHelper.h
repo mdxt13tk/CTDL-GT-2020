@@ -124,7 +124,7 @@ int coverStringToInt(string value)
 	ss >> result;
 	return result;
 }
-string removeCharater(string a)
+string removeCharacter(string a)
 {
 	string s = "";
 	for (int i = 0; i < a.length() - 1; i++)
@@ -133,30 +133,29 @@ string removeCharater(string a)
 }
 
 struct stack
-{  
-   int sp;
-   int nodes[MAX_VALUE_1];
+{
+	int sp;
+	int nodes[MAX_VALUE_1];
 };
 typedef struct stack STACK;
-bool empty(STACK st)
+bool empty(STACK &st)
 {
-   if(st.sp == -1)
-      return true;
-   else
-      return false;
+	if (st.sp == -1)
+		return true;
+	else
+		return false;
 }
 int push(STACK &st, int x)
 {
-   if(st.sp == MAX_VALUE_1-1) return 0;
-   st.nodes[++(st.sp)] = x;
-   return 1; 
+	if (st.sp == MAX_VALUE_1 - 1)
+		return 0;
+	st.nodes[++(st.sp)] = x;
+	return 1;
 }
 int pop(STACK &st, int &x)
 {
-   if(empty(st)) return 0;
-   x=st.nodes[(st.sp)--];
-   return 1;
+	if (empty(st))
+		return 0;
+	x = st.nodes[(st.sp)--];
+	return 1;
 }
-
-
-

@@ -265,7 +265,7 @@ char *createNameVertex()
 		else if (c == 8 && i > 0)
 		{
 			i--;
-			s = removeCharater(s);
+			s = removeCharacter(s);
 		}
 
 		result = &s[0];
@@ -396,7 +396,7 @@ int createTrongSo()
 		else if (c == 8 && i > 0)
 		{
 			i--;
-			s = removeCharater(s);
+			s = removeCharacter(s);
 		}
 		drawTutorial();
 		outtextxy(370, 520, "Nhap toi da 3 chu so, nhan ENTER de ket thuc");
@@ -532,7 +532,7 @@ string processFileName()
 		else if (c == 8 && i > 0)
 		{
 			i--;
-			s = removeCharater(s);
+			s = removeCharacter(s);
 		}
 		drawTutorial();
 		outtextxy(370, 520, "Nhap toi da 15 chu va so. Nhan ENTER de ket thuc");
@@ -842,20 +842,21 @@ void initTrace()
 }
 void setTextPrintStyle()
 {
-	settextstyle(8, 0, 1);
+	//settextstyle(8, 0, 1);
 	setcolor(0);
 	setbkcolor(BG_COLOR_MENU);
 }
 void processDFS(int position, int speed, int result[], int &nResult, int type)
 {
 	STACK stack;
-	stack.sp = -1;
+	stack.sp=-1;
 	int temp = position;
 	trace[position] = 1;
 	push(stack, position);
 
 	int x = 430;
 	nResult = 0;
+	
 	while (!empty(stack))
 	{
 		pop(stack, position);
@@ -866,7 +867,7 @@ void processDFS(int position, int speed, int result[], int &nResult, int type)
 		{
 			changeColorVertex(position, 12);
 			setTextPrintStyle();
-			outtextxy(370, 550, "DFS:");
+			outtextxy(370, 550, "DFS: ");
 			outtextxy(x, 550, graph[position].name);
 			x += 35;
 			outtextxy(x, 550, "->");
@@ -894,34 +895,36 @@ void processDFS(int position, int speed, int result[], int &nResult, int type)
 		if (type == 1)
 			changeColorVertex(position, 6);
 	}
-	if (type == 1)
-	{
-		drawTutorial();
-		outtextxy(370, 520, "Chon dinh bat dau: ");
-		outtextxy(575, 520, graph[temp].name);
-		x = 430;
-		for (int k = 0; k < nResult; k++)
-		{
-			setTextPrintStyle();
-			outtextxy(370, 550, "DFS: ");
-			outtextxy(x, 550, graph[result[k]].name);
-			x += 35;
-			if (k != nResult - 1)
-			{
-				outtextxy(x, 550, "->");
-				x += 30;
-			};
-		}
-	}
+	setcolor(BG_COLOR_MENU);
+	setbkcolor(BG_COLOR_MENU);
+	outtextxy(x-30, 550, "->");
+	// if (type == 1)
+	// {
+	// 	drawTutorial();
+	// 	outtextxy(370, 520, "Chon dinh bat dau: ");
+	// 	outtextxy(575, 520, graph[temp].name);
+	// 	x = 430;
+	// 	for (int k = 0; k < nResult; k++)
+	// 	{
+	// 		setTextPrintStyle();
+	// 		outtextxy(370, 550, "DFS: ");
+	// 		outtextxy(x, 550, graph[result[k]].name);
+	// 		x += 35;
+	// 		if (k != nResult - 1)
+	// 		{
+	// 			outtextxy(x, 550, "->");
+	// 			x += 30;
+	// 		};
+	// 	}
+	// }
 }
 void DFS()
 {
-	// Chon dinh
 	drawTutorial();
 	outtextxy(370, 520, "Chon dinh bat dau: ");
 	int x, y, position;
 
-	while (isVertex(x, y) == -1 && x != -1 && y != -1)
+	while (isVertex(x, y) == -1) //&& x != -1 && y != -1)
 	{
 		while (true)
 		{
@@ -940,7 +943,8 @@ void DFS()
 	int nResult, type;
 	initTrace();
 	processDFS(position, 500, result, nResult, 1);
-	outtextxy(370, 580, "Nhap 1 phim bat ki de tiep tuc ...");
+	setTextPrintStyle();
+	outtextxy(370, 580, "Nhan mot phim bat ki de tiep tuc ...");
 	getch();
 	renewGraph();
 }
@@ -1668,39 +1672,6 @@ void topoSort()
 		drawTopo(result, nResult);
 }
 
-void connectedComponentDFS()
-{
-	initTrace();
-	int countCC = 0;
-	int result[MAX];
-	int nResult;
-	int y = 0;
-	//drawTutorial();
-	outtextxy(370, 520, "Cac thanh phan lien thong manh la: ");
-	for (int i = 0; i < nVertex; i++)
-	{
-		if (trace[i] == 0)
-		{
-			nResult = 0;
-			outtextxy(370, 540 + (i * 20), &coverIntToString(++countCC)[0]);
-			outtextxy(400, 540 + (i * 20), ":");
-			processDFS(i, 1, result, nResult, 0);
-			if (nResult >= 2)
-				if (isStrongConnected(result, nResult) == false)
-					for (int k = 0; k < nResult; k++)
-					{
-						trace[result[k]] = 0;
-					}
-			for (int j = i; j < nResult; j++)
-			{
-				y = 540 + (i * 20);
-				outtextxy(410 + (j * 20), y, graph[result[j]].name);
-			}
-		}
-	}
-	string outStr = "Tong cong: " + coverIntToString(countCC);
-	outtextxy(370, y + 20, &outStr[0]);
-}
 
 void processFunction(int type)
 {
@@ -1732,14 +1703,10 @@ void processFunction(int type)
 		}
 		break;
 	case 3:
-		//drawTutorial();
-
-		//TPLT
 		drawTutorial();
 		if (nVertex != 0)
 		{
 			TPLT();
-			//connectedComponentDFS();
 		}
 		else
 		{
