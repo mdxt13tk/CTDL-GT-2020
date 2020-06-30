@@ -452,7 +452,7 @@ void drawVertex()
 					graph[nVertex].name[i] = result[i];
 				}
 
-				delete result;
+				delete[] result;
 
 				setcolor(15);
 				setbkcolor(BG_COLOR_VERTEX);
@@ -654,7 +654,7 @@ back:
 		graph[position].name[i] = result[i];
 	}
 
-	delete result;
+	delete[] result;
 	changeColorVertex(position, 2);
 	drawTutorial();
 	drawMatrixTT();
@@ -700,7 +700,7 @@ void removeVertex()
 	}
 
 	position = isVertex(x, y);
-	delete graph[position].name;
+	delete[] graph[position].name;
 	// X?a dinh cuoi c?ng
 	if (position == nVertex - 1)
 	{
@@ -852,7 +852,7 @@ void processDFS(int position, int speed, int result[], int &nResult, int type)
 	trace[position] = 1;
 	push(stack,position);
 
-	int x = 420;
+	int x = 430;
 	nResult = 0;
 	while (!empty(stack))
 	{
@@ -895,7 +895,7 @@ void processDFS(int position, int speed, int result[], int &nResult, int type)
 		drawTutorial();
 		outtextxy(370, 520, "Chon dinh bat dau: ");
 		outtextxy(575, 520, graph[temp].name);
-		x = 420;
+		x = 430;
 		for (int k = 0; k < nResult; k++)
 		{
 			setTextPrintStyle();
@@ -943,7 +943,7 @@ void DFS()
 void processBFS(int position)
 {
 	initTrace();
-	int x = 420;
+	int x = 430;
 	int queue[MAX * MAX];
 	int tail = 1;
 	int head = 1;
@@ -982,7 +982,7 @@ void processBFS(int position)
 	drawTutorial();
 	outtextxy(370, 520, "Chon dinh bat dau: ");
 	outtextxy(575, 520, graph[temp].name);
-	x = 420;
+	x = 430;
 	for (int k = 0; k < j; k++)
 	{
 		setTextPrintStyle();
